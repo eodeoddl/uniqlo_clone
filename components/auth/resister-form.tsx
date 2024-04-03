@@ -3,7 +3,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import CardWrapper from './card-wrapper';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginSchema } from '@/schemas';
+import { ResisterSchema } from '@/schemas';
 import {
   Form,
   FormControl,
@@ -16,15 +16,16 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import FormSuccess from '../ui/form-success';
-import { login } from '@/actions/login';
 import { useState, useTransition } from 'react';
+import { resister } from '@/actions/resister';
 
-export default function LoginForm() {
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+export default function ResisterForm() {
+  const form = useForm<z.infer<typeof ResisterSchema>>({
+    resolver: zodResolver(ResisterSchema),
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
   });
 
@@ -32,12 +33,12 @@ export default function LoginForm() {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof ResisterSchema>) => {
     setError('');
     setSuccess('');
 
     startTransition(async () => {
-      const { success, error } = await login(values);
+      const { success, error } = await resister(values);
       setError(error);
       setSuccess(success);
     });
@@ -45,14 +46,31 @@ export default function LoginForm() {
 
   return (
     <CardWrapper
-      headerLabel='안녕하세요?'
-      backButtonLabel='계정이 없으신가요?'
-      backButtonHref='/auth/resister'
+      headerLabel='계정을 생성하세요.'
+      backButtonLabel='계정이 있으신가요?'
+      backButtonHref='/auth/login'
       showSocial
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <div className='space-y-4'>
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>닉네임</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder='닉네임을 입력하세요'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='email'
@@ -93,7 +111,7 @@ export default function LoginForm() {
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button type='submit' disabled={isPending} className='w-full'>
-            로그인
+            계정 생성하기
           </Button>
         </form>
       </Form>

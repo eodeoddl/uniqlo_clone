@@ -21,7 +21,7 @@ export default function LoginButton({
   }
 
   return (
-    <span onClick={onClick} className='cursor-pointer'>
+    <span onClick={onClick} className='cursor-pointer inline-block'>
       {children}
     </span>
   );
