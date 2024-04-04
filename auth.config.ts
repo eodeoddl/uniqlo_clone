@@ -18,7 +18,7 @@ export const authConfig = {
       //   if (!isLoggedIn && !isPublicRoute)
       //     return Response.redirect(new URL("/auth/login", nextUrl));
       // });
-      return false;
+      return true;
     },
   },
   providers: [],
