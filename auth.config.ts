@@ -1,30 +1,25 @@
-import GitHub from 'next-auth/providers/github';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcrypt';
+import type { NextAuthConfig } from "next-auth";
 
-import type { NextAuthConfig } from 'next-auth';
-import { LoginSchema } from './schemas';
-import { getUserById } from './data/user';
+export const authConfig = {
+  pages: { signIn: "/auth/login" },
+  callbacks: {
+    authorized: async function ({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      //   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+      //   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+      //   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-export default {
-  // providers: [
-  //   CredentialsProvider({
-  //     async authorize(credentials) {
-  //       console.log(
-  //         'callback function of Credentials Provider => ',
-  //         credentials
-  //       );
-  //       const isValidatedFields = LoginSchema.safeParse(credentials);
-  //       if (isValidatedFields.success) {
-  //         const { email, password } = isValidatedFields.data;
-  //         const user = await getUserById(email);
-  //         if (!user || user.password !== password) return null;
-  //         // const passwordMatch = await bcrypt.compare(user.password, password);
-  //         // if (passwordMatch) return user;
-  //       }
-  //       return null;
-  //     },
-  //   }),
-  // ],
+      //   if (isApiAuthRoute) return;
+      //   if (isAuthRoute) {
+      //     if (isLoggedIn)
+      //       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      //     return;
+      //   }
+      //   if (!isLoggedIn && !isPublicRoute)
+      //     return Response.redirect(new URL("/auth/login", nextUrl));
+      // });
+      return false;
+    },
+  },
   providers: [],
 } satisfies NextAuthConfig;
