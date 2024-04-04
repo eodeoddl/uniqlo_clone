@@ -6,7 +6,7 @@
 export const publicRoutes = ['/'];
 
 /**
- *  인증이 필요한 routes.
+ *  인증에 필요한 routes.
  *  인증이 성공하면 DEFAULT_LOGIN_REDIRECT path로 이동
  *  @type {string[]}
  */
