@@ -3,14 +3,14 @@
  *  인증이 필요하지 않음.
  *  @type {string[]}
  */
-export const publicRoutes = ['/'];
+export const publicRoutes = ['/', '/auth/new-verification'];
 
 /**
  *  인증에 필요한 routes.
  *  인증이 성공하면 DEFAULT_LOGIN_REDIRECT path로 이동
  *  @type {string[]}
  */
-export const authRoutes = ['/auth/login', '/auth/resister'];
+export const authRoutes = ['/auth/login', '/auth/resister', '/auth/error'];
 
 /**
  *  API routes.
