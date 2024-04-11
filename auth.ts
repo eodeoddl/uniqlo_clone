@@ -2,12 +2,25 @@ import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { LoginSchema } from './schemas';
-import NextAuth from 'next-auth';
+import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { authConfig } from './auth.config';
 import bcrypt from 'bcrypt';
 import { db } from './lib/db';
 import { getUserByEmail, getUserById } from './data/user';
+import { ZodError } from 'zod';
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      role?: 'ADMIN' | 'USER';
+      token?: string;
+      refreshToken?: string;
+    } & DefaultSession['user'];
+  }
+}
+
+class CustomError extends CredentialsSignin {}
 
 export const {
   handlers: { GET, POST },
@@ -36,9 +49,15 @@ export const {
       return true;
     },
     async session({ session, token }) {
-      if (token.sub && session.user) session.user.id = token.sub;
-      if (token.role && session.user) session.user.role = token.role;
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          role: token.role,
+          token: token.token,
+          refreshToken: token.refreshToken,
+        },
+      };
     },
     async jwt({ token }) {
       if (token.sub) {
@@ -54,15 +73,18 @@ export const {
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        const isValidatedFields = LoginSchema.safeParse(credentials);
-        if (isValidatedFields.success) {
-          const { email, password } = isValidatedFields.data;
-          const user = await getUserByEmail(email);
-          if (!user || !user.password) return null;
-          const passwordMatch = await bcrypt.compare(password, user.password);
-          if (passwordMatch) return user;
-        }
-        return null;
+        let user = null;
+        const { email, password } = await LoginSchema.parseAsync(credentials);
+        user = await getUserByEmail(email);
+        if (!user || !user.password)
+          throw new Error(
+            '회원가입이 필요한 이메일 입니다. 회원가입을 진행해 주세요.'
+          );
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
+
+        return user;
       },
     }),
     GitHub({

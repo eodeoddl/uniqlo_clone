@@ -19,7 +19,6 @@ export const verificationValidation = async (
   const { email, password, name, token } = validatedFields.data;
 
   const isTokenMatched = await bcrypt.compare(value, token);
-  console.log(isTokenMatched);
   if (!isTokenMatched) throw new Error('인증코드가 일치하지 않습니다.');
 
   await db.user.create({
@@ -31,5 +30,5 @@ export const verificationValidation = async (
     },
   });
 
-  redirect('/');
+  redirect('/auth/login');
 };

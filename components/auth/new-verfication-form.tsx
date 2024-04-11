@@ -28,9 +28,11 @@ export default function NewVerificationForm() {
       if (key === 'expires') return new Date(value);
       return value;
     });
+
     startTransition(async () => {
       try {
         await verificationValidation(verification, token);
+        sessionStorage.removeItem('token');
       } catch (error) {
         if (error instanceof Error) setError(error?.message);
       }
