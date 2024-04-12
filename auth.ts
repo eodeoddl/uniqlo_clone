@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+import { getUserByEmail, getUserById } from "./data/user";
+
+import CredentialsProvider from "next-auth/providers/credentials";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import { LoginSchema } from "./schemas";
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { authConfig } from "./auth.config";
+import bcrypt from "bcrypt";
+import { db } from "./lib/db";
+=======
 import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -21,6 +34,7 @@ declare module 'next-auth' {
 }
 
 class CustomError extends CredentialsSignin {}
+>>>>>>> 665262204745f7052496ae0518ad33f25b4520db
 
 export const {
   handlers: { GET, POST },
@@ -30,6 +44,9 @@ export const {
 } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
+<<<<<<< HEAD
+  session: { strategy: "jwt" },
+=======
   session: { strategy: 'jwt' },
   events: {
     async linkAccount({ user }) {
@@ -39,6 +56,7 @@ export const {
       });
     },
   },
+>>>>>>> 665262204745f7052496ae0518ad33f25b4520db
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider !== 'credentials') return true;
@@ -49,6 +67,12 @@ export const {
       return true;
     },
     async session({ session, token }) {
+<<<<<<< HEAD
+      console.log("session callback => ", session, token);
+      if (token.sub && session.user) session.user.id = token.sub;
+      if (token.role && session.user) session.user.role = token.role;
+      return session;
+=======
       return {
         ...session,
         user: {
@@ -58,11 +82,13 @@ export const {
           refreshToken: token.refreshToken,
         },
       };
+>>>>>>> 665262204745f7052496ae0518ad33f25b4520db
     },
     async jwt({ token }) {
       if (token.sub) {
         const user = await getUserById(token.sub);
         if (user) {
+          console.log("token callback => ", user);
           token.role = user.role;
           return token;
         }
