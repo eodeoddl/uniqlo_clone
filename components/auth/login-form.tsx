@@ -1,7 +1,6 @@
 'use client';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
-import CardWrapper from './card-wrapper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginSchema } from '@/schemas';
 import {
@@ -15,10 +14,14 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
-import FormSuccess from '../ui/form-success';
 import { login } from '@/actions/login';
 import { useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
+import Header from './header';
+import BackButton from './back-button';
+import Social from './social';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -37,11 +40,9 @@ export default function LoginForm() {
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError('');
-    setSuccess('');
 
     startTransition(async () => {
       const res = await login(values);
@@ -50,59 +51,124 @@ export default function LoginForm() {
   };
 
   return (
-    <CardWrapper
-      headerLabel='안녕하세요?'
-      backButtonLabel='계정이 없으신가요?'
-      backButtonHref='/auth/resister'
-      showSocial
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          <div className='space-y-4'>
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>이메일</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder='Email을 입력하세요'
-                      type='email'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>비밀번호</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder='비밀번호를 입력하세요'
-                      type='password'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormError message={error || redirectionWithError} />
-          <FormSuccess message={success} />
-          <Button type='submit' disabled={isPending} className='w-full'>
-            로그인
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+    <Card className='w-full md:max-w-[500px] md:shadow-md'>
+      <CardHeader>
+        <Header label='안녕하세요?' />
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            <div className='space-y-4'>
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이메일</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder='Email을 입력하세요'
+                        type='email'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder='비밀번호를 입력하세요'
+                        type='password'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormError message={error || redirectionWithError} />
+            <Button type='submit' disabled={isPending} className='w-full'>
+              로그인
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className='flex-col flex-wrap gap-2'>
+        <Social />
+        <BackButton href='/auth/resister' label='계정이 없으신가요?' />
+        <Button size='sm' variant='link' className='font-normal'>
+          <Link href='/auth/reset'>비밀번호를 잊어버리셨나요?</Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
+
+  // return (
+  //   <CardWrapper
+  //     headerLabel='안녕하세요?'
+  //     backButtonLabel='계정이 없으신가요?'
+  //     backButtonHref='/auth/resister'
+  //     showSocial
+  //   >
+  // <Form {...form}>
+  //   <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+  //     <div className='space-y-4'>
+  //       <FormField
+  //         control={form.control}
+  //         name='email'
+  //         render={({ field }) => (
+  //           <FormItem>
+  //             <FormLabel>이메일</FormLabel>
+  //             <FormControl>
+  //               <Input
+  //                 {...field}
+  //                 disabled={isPending}
+  //                 placeholder='Email을 입력하세요'
+  //                 type='email'
+  //               />
+  //             </FormControl>
+  //             <FormMessage />
+  //           </FormItem>
+  //         )}
+  //       />
+  //       <FormField
+  //         control={form.control}
+  //         name='password'
+  //         render={({ field }) => (
+  //           <FormItem>
+  //             <FormLabel>비밀번호</FormLabel>
+  //             <FormControl>
+  //               <Input
+  //                 {...field}
+  //                 disabled={isPending}
+  //                 placeholder='비밀번호를 입력하세요'
+  //                 type='password'
+  //               />
+  //             </FormControl>
+  //             <FormMessage />
+  //           </FormItem>
+  //         )}
+  //       />
+  //     </div>
+  //     <FormError message={error || redirectionWithError} />
+  //     <Button type='submit' disabled={isPending} className='w-full'>
+  //       로그인
+  //     </Button>
+  //   </form>
+  // </Form>
+  // <Button size='sm' variant='link'>
+  //   비밀번호를 잊어버리셨나요?
+  // </Button>
+  //   </CardWrapper>
+  // );
 }

@@ -10,7 +10,7 @@ interface BackButtonProps {
 
 export default function BackButton({ href, label }: BackButtonProps) {
   return (
-    <Button variant='link' className='font-normal mx-auto'>
+    <Button variant='link' className='font-normal'>
       <Link href={href}>{label}</Link>
     </Button>
   );

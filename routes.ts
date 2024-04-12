@@ -10,7 +10,12 @@ export const publicRoutes = ['/', '/auth/new-verification'];
  *  인증이 성공하면 DEFAULT_LOGIN_REDIRECT path로 이동
  *  @type {string[]}
  */
-export const authRoutes = ['/auth/login', '/auth/resister', '/auth/error'];
+export const authRoutes = [
+  '/auth/login',
+  '/auth/resister',
+  '/auth/error',
+  '/auth/reset',
+];
 
 /**
  *  API routes.
