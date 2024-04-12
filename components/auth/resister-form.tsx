@@ -25,6 +25,7 @@ export default function ResisterForm() {
     defaultValues: {
       email: '',
       password: '',
+      confirmPassword : '',
       name: '',
     },
   });
@@ -104,6 +105,24 @@ export default function ResisterForm() {
                       {...field}
                       disabled={isPending}
                       placeholder='비밀번호를 입력하세요'
+                      type='password'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='confirmPassword'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>비밀번호 확인</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder='비밀번호를 확인하세요'
                       type='password'
                     />
                   </FormControl>

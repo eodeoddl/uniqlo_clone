@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -9,6 +10,19 @@ import bcrypt from "bcrypt";
 import { db } from "./lib/db";
 import { getUserByEmail, getUserById } from "./data/user";
 import { ZodError } from "zod";
+=======
+import GitHub from 'next-auth/providers/github';
+import Google from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { LoginSchema } from './schemas';
+import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { authConfig } from './auth.config';
+import bcrypt from 'bcrypt';
+import { db } from './lib/db';
+import { getUserByEmail, getUserById } from './data/user';
+import { ZodError } from 'zod';
+>>>>>>> 022ab713b22421ca6f9b134376ef3222903a2514
 
 declare module "next-auth" {
   interface Session {
@@ -30,7 +44,11 @@ export const {
 } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
+<<<<<<< HEAD
   session: { strategy: "jwt" },
+=======
+  session: { strategy: 'jwt' },
+>>>>>>> 022ab713b22421ca6f9b134376ef3222903a2514
   events: {
     async linkAccount({ user }) {
       await db.user.update({
@@ -63,7 +81,7 @@ export const {
       if (token.sub) {
         const user = await getUserById(token.sub);
         if (user) {
-          console.log("token callback => ", user);
+          console.log('token callback => ', user);
           token.role = user.role;
           return token;
         }

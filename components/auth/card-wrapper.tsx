@@ -31,6 +31,7 @@ export default function CardWrapper({
           <Social />
         </CardFooter>
       )}
+      {/* card footer place link or other information */}
       <CardFooter>
         <BackButton href={backButtonHref} label={backButtonLabel} />
       </CardFooter>
