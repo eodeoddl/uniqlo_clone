@@ -3,11 +3,6 @@ import { CircleUserRound } from "lucide-react";
 import LoginButton from "@/components/auth/login-button";
 
 export default async function Home() {
-  const a = await fetch("https://2335-218-147-218-191.ngrok-free.app");
-  if (!a.ok) throw Error();
-  const res = a.json();
-  console.log(res);
-
   return (
     <main className="flex flex-col justify-center items-center h-full">
       <div className="space-y-6 text-center">
