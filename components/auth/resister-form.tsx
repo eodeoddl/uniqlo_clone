@@ -15,9 +15,9 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
-import FormSuccess from '../ui/form-success';
 import { useState, useTransition } from 'react';
 import { resister } from '@/actions/resister';
+import { useRouter } from 'next/navigation';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -31,16 +31,20 @@ export default function ResisterForm() {
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
+
+  const router = useRouter();
 
   const onSubmit = (values: z.infer<typeof ResisterSchema>) => {
     setError('');
-    setSuccess('');
 
     startTransition(async () => {
-      const { success, error } = await resister(values);
+      const { verification, error } = await resister(values);
       setError(error);
-      setSuccess(success);
+
+      if (verification?.token) {
+        sessionStorage.setItem('token', JSON.stringify(verification));
+        router.push('/auth/new-verification');
+      }
     });
   };
 
@@ -109,7 +113,6 @@ export default function ResisterForm() {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
           <Button type='submit' disabled={isPending} className='w-full'>
             계정 생성하기
           </Button>

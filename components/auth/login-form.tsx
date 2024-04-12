@@ -18,6 +18,7 @@ import FormError from '../ui/form-error';
 import FormSuccess from '../ui/form-success';
 import { login } from '@/actions/login';
 import { useState, useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -28,6 +29,12 @@ export default function LoginForm() {
     },
   });
 
+  const searchParams = useSearchParams();
+  const redirectionWithError =
+    searchParams.get('error') === 'OAuthAccountNotLinked'
+      ? '다른 로그인 제공자에서 사용되는 이메일 링크입니다.'
+      : '';
+
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
@@ -37,9 +44,8 @@ export default function LoginForm() {
     setSuccess('');
 
     startTransition(async () => {
-      const { success, error } = await login(values);
-      setError(error);
-      setSuccess(success);
+      const res = await login(values);
+      setError(res?.error);
     });
   };
 
@@ -90,7 +96,7 @@ export default function LoginForm() {
               )}
             />
           </div>
-          <FormError message={error} />
+          <FormError message={error || redirectionWithError} />
           <FormSuccess message={success} />
           <Button type='submit' disabled={isPending} className='w-full'>
             로그인
