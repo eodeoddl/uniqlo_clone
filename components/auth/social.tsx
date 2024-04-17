@@ -13,7 +13,7 @@ export default function Social() {
     signIn(provider, { callbackUrl: DEFAULT_LOGIN_REDIRECT });
   };
   return (
-    <div className='flex items-cneter w-full gap-x-2'>
+    <div className='flex flex-col sm:flex-row items-cneter justify-center w-full gap-2'>
       <Button
         size='lg'
         variant='outline'

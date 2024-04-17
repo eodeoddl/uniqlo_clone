@@ -25,7 +25,7 @@ export default function ResisterForm() {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword : '',
+      confirmPassword: '',
       name: '',
     },
   });
@@ -44,7 +44,7 @@ export default function ResisterForm() {
 
       if (verification?.token) {
         sessionStorage.setItem('token', JSON.stringify(verification));
-        router.push('/auth/new-verification');
+        router.push('/auth/verification');
       }
     });
   };

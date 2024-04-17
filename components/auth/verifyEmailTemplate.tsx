@@ -1,4 +1,4 @@
-export default function EmailTemplate({ token }: { token: string }) {
+export default function VerifyEmailTemplate({ token }: { token: string }) {
   return (
     <div className='text-xl text-center'>
       <p className='font-semibold'>

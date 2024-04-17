@@ -5,7 +5,16 @@ export const LoginSchema = z.object({
     .string()
     .email({ message: '올바르지 않은 이메일 형식입니다.' })
     .min(1, { message: '이메일을 입력해주세요' }),
-  password: z.string().min(1, { message: '비밀번호를 입력해주세요' }),
+  password: z
+    .string()
+    .refine((data) => data.length >= 1, {
+      message: '비밀번호를 입력해 주세요.',
+    })
+    .optional(),
+  emailVerified: z
+    .string()
+    .optional()
+    .transform((data) => (data ? new Date(data).toISOString() : null)),
 });
 
 const BaseResisterSchema = z.object({
@@ -23,7 +32,9 @@ export const ResisterSchema = BaseResisterSchema.refine(
   { message: '비밀번호가 일치하지 않습니다.', path: ['confirmPassword'] }
 );
 
-export const VerificationSchema = BaseResisterSchema.extend({
+export const VerificationSchema = BaseResisterSchema.omit({
+  confirmPassword: true,
+}).extend({
   expires: z.date().refine((date) => date > new Date(), {
     message: '유효기간이 만료된 코드입니다.',
   }),

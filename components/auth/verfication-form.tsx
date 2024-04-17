@@ -1,16 +1,19 @@
 'use client';
 import CardWrapper from './card-wrapper';
 import { useState, useTransition } from 'react';
-import { verificationValidation } from '@/actions/new-verification';
+import { verificationValidation } from '@/actions/verification';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
+import { useRouter } from 'next/navigation';
 
-export default function NewVerificationForm() {
+export default function VerificationForm() {
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   const form = useForm<{ token: string }>({
     defaultValues: {
       token: '',
@@ -21,7 +24,7 @@ export default function NewVerificationForm() {
     const isOnSession = sessionStorage.getItem('token');
     if (!isOnSession)
       return setError(
-        '유효하지않은세션 입니다. 회원가입을 다시 진행해 주세요.'
+        '유효하지않은세션 입니다. 인증토큰을 발급받고 진행해 주세요.'
       );
 
     const verification = JSON.parse(isOnSession, (key, value) => {
@@ -33,7 +36,9 @@ export default function NewVerificationForm() {
       try {
         await verificationValidation(verification, token);
         sessionStorage.removeItem('token');
+        router.push('/auth/verification/success?type=resister');
       } catch (error) {
+        console.log('catch error in verification form ');
         if (error instanceof Error) setError(error?.message);
       }
     });

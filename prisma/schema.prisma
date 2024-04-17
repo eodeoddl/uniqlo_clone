@@ -14,6 +14,11 @@ enum UserRole {
   USER
 }
 
+enum VerificationType {
+  RESISTER
+  RESET_PASSWORD
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -44,11 +49,11 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model VerificationToken {
-  id      String @id @default(cuid())
-  email   String
-  token   String @unique
-  expires DateTime
+model Verification {
+  token       String          @unique
+  email       String
+  type        VerificationType
+  expries_at  DateTime
 
-  @@unique([email, token])
+  @@unique([email, type])
 }

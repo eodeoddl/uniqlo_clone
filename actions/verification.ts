@@ -3,8 +3,9 @@
 import { db } from '@/lib/db';
 import { VerificationSchema } from '@/schemas';
 import bcrypt from 'bcrypt';
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 export const verificationValidation = async (
   verification: z.infer<typeof VerificationSchema>,
@@ -21,14 +22,32 @@ export const verificationValidation = async (
   const isTokenMatched = await bcrypt.compare(value, token);
   if (!isTokenMatched) throw new Error('인증코드가 일치하지 않습니다.');
 
-  await db.user.create({
-    data: {
-      email,
-      password,
-      name,
-      emailVerified: new Date(),
-    },
-  });
+  const emailVerified = new Date();
+  console.log('user is success to create account at ', emailVerified);
 
-  redirect('/auth/login');
+  const createAccount = async () =>
+    await db.user.create({
+      data: {
+        email,
+        password,
+        name,
+        emailVerified,
+      },
+    });
+
+  const loginWithCreateAccount = async () =>
+    await signIn('credentials', {
+      email,
+      emailVerified,
+    });
+
+  try {
+    await createAccount();
+    await loginWithCreateAccount();
+  } catch (error) {
+    if (error instanceof AuthError) {
+      await db.user.delete({ where: { email } });
+    }
+    throw error;
+  }
 };

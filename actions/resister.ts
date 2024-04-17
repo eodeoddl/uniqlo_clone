@@ -24,6 +24,7 @@ export const resister = async (values: z.infer<typeof ResisterSchema>) => {
   //     name,
   //   },
   // });
+
   const verification = generateToken();
   const hashedToken = await bcrypt.hash(verification.token, 10);
   await sendVerificationEmail(email, verification.token);

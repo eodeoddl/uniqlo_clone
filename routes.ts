@@ -3,7 +3,11 @@
  *  인증이 필요하지 않음.
  *  @type {string[]}
  */
-export const publicRoutes = ['/', '/auth/new-verification'];
+export const publicRoutes = [
+  '/',
+  '/auth/verification',
+  '/auth/verification/success',
+];
 
 /**
  *  인증에 필요한 routes.
