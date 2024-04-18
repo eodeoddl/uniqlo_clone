@@ -39,11 +39,12 @@ export default function ResisterForm() {
     setError('');
 
     startTransition(async () => {
-      const { verification, error } = await resister(values);
-      setError(error);
+      const res = await resister(values);
 
-      if (verification?.token) {
-        sessionStorage.setItem('token', JSON.stringify(verification));
+      if (res?.error) {
+        setError(error);
+      } else {
+        // sessionStorage.setItem('token', JSON.stringify(verification));
         router.push('/auth/verification');
       }
     });

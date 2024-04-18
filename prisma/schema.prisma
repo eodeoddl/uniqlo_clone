@@ -50,10 +50,9 @@ model Account {
 }
 
 model Verification {
-  token       String          @unique
-  email       String
-  type        VerificationType
-  expries_at  DateTime
-
-  @@unique([email, type])
+  token       String    @unique
+  name        String
+  email       String    @unique
+  password    String
+  expires_at  DateTime
 }

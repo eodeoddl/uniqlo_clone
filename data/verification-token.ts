@@ -1,23 +1,20 @@
 import { db } from '@/lib/db';
 
-export const getVerificationTokenByToken = async (token: string) => {
+export const getVerification = async (token?: string) => {
   try {
-    const verificationToken = await db.verificationToken.findUnique({
-      where: { token },
-    });
-    return verificationToken;
-  } catch {
+    const verification = await db.verification.findUnique({ where: { token } });
+    return verification;
+  } catch (error) {
     return null;
   }
 };
 
-export const getVerificationTokenByEmail = async (email: string) => {
+export const deleteVerification = async (token: string) => {
   try {
-    const verificationToken = await db.verificationToken.findFirst({
-      where: { email },
-    });
-    return verificationToken;
-  } catch {
-    return null;
+    console.log('on delete token ', token);
+    await db.verification.delete({ where: { token } });
+  } catch (error) {
+    console.log('on delete error ', error);
+    throw error;
   }
 };

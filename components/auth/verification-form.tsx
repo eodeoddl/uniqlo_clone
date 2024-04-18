@@ -21,24 +21,10 @@ export default function VerificationForm() {
   });
 
   const onSubmit = ({ token }: { token: string }) => {
-    const isOnSession = sessionStorage.getItem('token');
-    if (!isOnSession)
-      return setError(
-        '유효하지않은세션 입니다. 인증토큰을 발급받고 진행해 주세요.'
-      );
-
-    const verification = JSON.parse(isOnSession, (key, value) => {
-      if (key === 'expires') return new Date(value);
-      return value;
-    });
-
     startTransition(async () => {
       try {
-        await verificationValidation(verification, token);
-        sessionStorage.removeItem('token');
-        router.push('/auth/verification/success?type=resister');
+        await verificationValidation(token);
       } catch (error) {
-        console.log('catch error in verification form ');
         if (error instanceof Error) setError(error?.message);
       }
     });

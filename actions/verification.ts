@@ -1,44 +1,34 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { VerificationSchema } from '@/schemas';
-import bcrypt from 'bcrypt';
-import { z } from 'zod';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { getVerification } from '@/data/verification-token';
 
-export const verificationValidation = async (
-  verification: z.infer<typeof VerificationSchema>,
-  value: string
-) => {
-  const validatedFields = VerificationSchema.safeParse(verification);
+export const verificationValidation = async (token: string) => {
+  const verification = await getVerification(token);
 
-  if (!validatedFields.success) {
-    throw new Error(validatedFields.error.errors[0].message);
-  }
+  if (!verification) throw Error('인증코드가 일치하지 않습니다.');
 
-  const { email, password, name, token } = validatedFields.data;
-
-  const isTokenMatched = await bcrypt.compare(value, token);
-  if (!isTokenMatched) throw new Error('인증코드가 일치하지 않습니다.');
-
-  const emailVerified = new Date();
-  console.log('user is success to create account at ', emailVerified);
+  if (verification.expires_at.getTime() <= new Date().getTime())
+    throw Error(
+      '기간이 만료된 인증코드입니다. 회원가입 절차를 다시 밟아주세요.'
+    );
 
   const createAccount = async () =>
     await db.user.create({
       data: {
-        email,
-        password,
-        name,
-        emailVerified,
+        email: verification.email,
+        password: verification.password,
+        name: verification.name,
+        emailVerified: new Date(),
       },
     });
 
   const loginWithCreateAccount = async () =>
     await signIn('credentials', {
-      email,
-      emailVerified,
+      token,
+      redirectTo: '/auth/verification/success',
     });
 
   try {
@@ -46,7 +36,7 @@ export const verificationValidation = async (
     await loginWithCreateAccount();
   } catch (error) {
     if (error instanceof AuthError) {
-      await db.user.delete({ where: { email } });
+      await db.user.delete({ where: { email: verification.email } });
     }
     throw error;
   }

@@ -17,25 +17,23 @@ export const resister = async (values: z.infer<typeof ResisterSchema>) => {
 
   if (existingUser) return { error: '이미 사용중인 Email 입니다.' };
 
-  // await db.user.create({
-  //   data: {
-  //     email,
-  //     password: hashedPassword,
-  //     name,
-  //   },
-  // });
+  const { token, expires } = generateToken();
 
-  const verification = generateToken();
-  const hashedToken = await bcrypt.hash(verification.token, 10);
-  await sendVerificationEmail(email, verification.token);
+  try {
+    await sendVerificationEmail(email, token);
 
-  return {
-    verification: {
-      token: hashedToken,
-      expires: verification.expires,
-      email,
-      name,
-      password: hashedPassword,
-    },
-  };
+    await db.verification.upsert({
+      where: { email },
+      update: { token, expires_at: expires },
+      create: {
+        email,
+        name,
+        password: hashedPassword,
+        token,
+        expires_at: expires,
+      },
+    });
+  } catch (error) {
+    return { error: '알 수 없는 오류' };
+  }
 };
