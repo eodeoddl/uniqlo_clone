@@ -17,7 +17,6 @@ import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { useState, useTransition } from 'react';
 import { resister } from '@/actions/resister';
-import { useRouter } from 'next/navigation';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -33,20 +32,13 @@ export default function ResisterForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
 
-  const router = useRouter();
-
   const onSubmit = (values: z.infer<typeof ResisterSchema>) => {
     setError('');
 
     startTransition(async () => {
       const res = await resister(values);
 
-      if (res?.error) {
-        setError(error);
-      } else {
-        // sessionStorage.setItem('token', JSON.stringify(verification));
-        router.push('/auth/verification');
-      }
+      if (res?.error) setError(error);
     });
   };
 

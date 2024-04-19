@@ -10,16 +10,19 @@ export const publicRoutes = [
 ];
 
 /**
+ * 로그인 사용자만 접근가능한 routes.
+ * 로그인 되어있지않다면 /auth/login으로 redirect
+ * @type {string[]}
+ */
+
+export const protectedRoutes = ['/editPassword'];
+
+/**
  *  인증에 필요한 routes.
  *  인증이 성공하면 DEFAULT_LOGIN_REDIRECT path로 이동
  *  @type {string[]}
  */
-export const authRoutes = [
-  '/auth/login',
-  '/auth/resister',
-  '/auth/error',
-  '/auth/reset',
-];
+export const authRoutes = ['/auth/login', '/auth/resister', '/auth/error'];
 
 /**
  *  API routes.

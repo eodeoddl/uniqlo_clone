@@ -1,13 +1,13 @@
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig } from 'next-auth';
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-} from "./routes";
+} from './routes';
 
 export const authConfig = {
-  pages: { signIn: "/auth/login" },
+  pages: { signIn: '/auth/login' },
   callbacks: {
     authorized: async function ({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
@@ -22,8 +22,11 @@ export const authConfig = {
           return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
         return true;
       }
-      if (!isLoggedIn && !isPublicRoute)
-        return Response.redirect(new URL("/auth/login", nextUrl));
+
+      if (!isLoggedIn && !isPublicRoute) {
+        if (nextUrl.searchParams.get('token')) return true;
+        return Response.redirect(new URL('/auth/login', nextUrl));
+      }
 
       return true;
     },

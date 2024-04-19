@@ -6,6 +6,7 @@ import { db } from '@/lib/db';
 import { getUserByEmail } from '@/data/user';
 import { sendVerificationEmail } from '@/lib/mail';
 import { generateToken } from '@/lib/token';
+import { redirect } from 'next/navigation';
 
 export const resister = async (values: z.infer<typeof ResisterSchema>) => {
   const validatedFields = ResisterSchema.safeParse(values);
@@ -33,6 +34,7 @@ export const resister = async (values: z.infer<typeof ResisterSchema>) => {
         expires_at: expires,
       },
     });
+    redirect('/auth/verification');
   } catch (error) {
     return { error: '알 수 없는 오류' };
   }

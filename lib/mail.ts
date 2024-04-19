@@ -1,4 +1,4 @@
-import PasswordEditEmailTemplate from '@/components/auth/passwordEditEmailTemplate';
+import PasswordEditEmailTemplate from '@/components/account/passwordEditEmailTemplate';
 import VerifyEmailTemplate from '@/components/auth/verifyEmailTemplate';
 import { Resend } from 'resend';
 
@@ -14,7 +14,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 };
 
 export const sendPasswordEditEmail = async (email: string, token: string) => {
-  const confirmLink = `http://localhost:3000/auth/new-verification?token=${token}`;
+  const confirmLink = `http://localhost:3000/account/passwordEdit?token=${token}`;
   await resend.emails.send({
     from: 'onboarding@resend.dev',
     to: email,
