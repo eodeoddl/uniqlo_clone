@@ -7,8 +7,13 @@ import { getUserByEmail } from '@/data/user';
 import { sendVerificationEmail } from '@/lib/mail';
 import { generateToken } from '@/lib/token';
 import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
+import { tokenValidation } from './verification';
+import { AuthError } from 'next-auth';
 
-export const resister = async (values: z.infer<typeof ResisterSchema>) => {
+export const sendResisterToken = async (
+  values: z.infer<typeof ResisterSchema>
+) => {
   const validatedFields = ResisterSchema.safeParse(values);
   if (!validatedFields.success) return { error: '잘못된 입력 방식입니다.' };
   const { email, password, name } = values;
@@ -37,5 +42,35 @@ export const resister = async (values: z.infer<typeof ResisterSchema>) => {
     redirect('/auth/verification');
   } catch (error) {
     return { error: '알 수 없는 오류' };
+  }
+};
+
+export const resister = async (token: string) => {
+  const { email, password, name } = await tokenValidation(token);
+
+  const createAccount = async () =>
+    await db.user.create({
+      data: {
+        email,
+        password,
+        name,
+        emailVerified: new Date(),
+      },
+    });
+
+  const loginWithCreateAccount = async () =>
+    await signIn('credentials', {
+      token,
+      redirectTo: '/auth/verification/success',
+    });
+
+  try {
+    await createAccount();
+    await loginWithCreateAccount();
+  } catch (error) {
+    if (error instanceof AuthError) {
+      await db.user.delete({ where: { email } });
+    }
+    throw error;
   }
 };

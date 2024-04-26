@@ -37,9 +37,16 @@ export default function PasswordEditForm() {
   const onSubmit = (values: z.infer<typeof EditPasswordSchema>) => {
     console.log('onsubmit active');
     startTransition(async () => {
-      token
-        ? await editPasswordByToken(values, token)
-        : await editPassword(values);
+      try {
+        const { message, type } = token
+          ? await editPasswordByToken(values, token)
+          : await editPassword(values);
+
+        if (type === 'VerificationError') form.setError('root', { message });
+      } catch (error) {
+        if (error instanceof Error)
+          form.setError('root', { message: error.message });
+      }
     });
   };
 
@@ -88,7 +95,9 @@ export default function PasswordEditForm() {
                   </FormItem>
                 )}
               />
-              <FormError />
+              {form.formState.errors.root && (
+                <FormError message={form.formState.errors.root.message} />
+              )}
               <Button type='submit' disabled={isPending}>
                 변경하기
               </Button>

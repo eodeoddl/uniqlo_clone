@@ -1,18 +1,16 @@
 'use client';
 import CardWrapper from './card-wrapper';
 import { useState, useTransition } from 'react';
-import { verificationValidation } from '@/actions/verification';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
-import { useRouter } from 'next/navigation';
+import { resister } from '@/actions/resister';
 
 export default function VerificationForm() {
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const form = useForm<{ token: string }>({
     defaultValues: {
@@ -23,7 +21,7 @@ export default function VerificationForm() {
   const onSubmit = ({ token }: { token: string }) => {
     startTransition(async () => {
       try {
-        await verificationValidation(token);
+        await resister(token);
       } catch (error) {
         if (error instanceof Error) setError(error?.message);
       }
@@ -38,26 +36,24 @@ export default function VerificationForm() {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-          <div className='flex items-center justify-center gap-3 w-full'>
-            <FormField
-              name='token'
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className='w-full'>
-                  <FormControl>
-                    <Input
-                      placeholder='인증코드'
-                      disabled={isPending}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type='submit' disabled={isPending}>
-              입력
-            </Button>
-          </div>
+          <FormField
+            name='token'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className='flex items-center justify-center gap-3 w-full'>
+                <FormControl>
+                  <Input
+                    placeholder='인증코드'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <Button type='submit' disabled={isPending}>
+                  입력
+                </Button>
+              </FormItem>
+            )}
+          />
           <FormError message={error} />
         </form>
       </Form>

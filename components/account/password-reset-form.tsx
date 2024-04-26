@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { sendVerificationEmail } from '@/actions/editPassword';
+import { isKeyOf } from '@/lib/utils';
 
 export default function PasswordResetForm() {
   const form = useForm<z.infer<typeof ResetPasswordSchema>>({
@@ -29,7 +30,16 @@ export default function PasswordResetForm() {
 
   const onSubmit = (values: z.infer<typeof ResetPasswordSchema>) => {
     startTransition(async () => {
-      await sendVerificationEmail(values);
+      try {
+        const { field, message } = await sendVerificationEmail(values);
+        if (isKeyOf(field, values)) form.setError(field, { message });
+      } catch (error) {
+        if (error instanceof Error) {
+          form.setError('root', {
+            message: '알수 없는 오류 입니다. 잠시후에 다시 시도해 주세요.',
+          });
+        }
+      }
     });
   };
 
@@ -37,7 +47,7 @@ export default function PasswordResetForm() {
     <div className='flex items-center h-full'>
       <Card className='w-[400px] mx-auto h-fit'>
         <CardHeader className='text-center font-semibold text-3xl'>
-          <h1>비밀번호 변경</h1>
+          <h1>비밀번호 재설정</h1>
           <p className='text-muted-foreground text-sm'>
             회원가입 시 등록하신 이메일 주소를 입력해 주세요. 비밀번호 재설정
             링크가 포함된 안내 메일이 발송됩니다.
@@ -52,26 +62,28 @@ export default function PasswordResetForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>이메일(아이디)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='email'
-                        placeholder='email'
-                        disabled={isPending}
-                      />
-                    </FormControl>
+                    <div className='flex items-center justify-center gap-3 w-full'>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type='email'
+                          placeholder='email'
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <Button type='submit'>메일 전송</Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormError />
-              <Button type='submit' disabled={isPending}>
-                전송
-              </Button>
+              {form.formState.errors.root && (
+                <FormError message={form.formState.errors.root.message} />
+              )}
             </form>
           </Form>
         </CardContent>
-        <CardFooter>
+        <CardFooter className='justify-center'>
           <BackButton href='/auth/login' label='뒤로가기' />
         </CardFooter>
       </Card>

@@ -7,6 +7,9 @@ export const publicRoutes = [
   '/',
   '/auth/verification',
   '/auth/verification/success',
+  '/account/passwordReset',
+  '/account/passwordReset/success',
+  '/account/passwordEdit/success',
 ];
 
 /**
@@ -15,7 +18,7 @@ export const publicRoutes = [
  * @type {string[]}
  */
 
-export const protectedRoutes = ['/editPassword'];
+// export const protectedRoutes = ['/editPassword'];
 
 /**
  *  인증에 필요한 routes.

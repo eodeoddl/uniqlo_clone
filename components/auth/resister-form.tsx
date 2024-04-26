@@ -16,7 +16,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { useState, useTransition } from 'react';
-import { resister } from '@/actions/resister';
+import { sendResisterToken } from '@/actions/resister';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -36,7 +36,7 @@ export default function ResisterForm() {
     setError('');
 
     startTransition(async () => {
-      const res = await resister(values);
+      const res = await sendResisterToken(values);
 
       if (res?.error) setError(error);
     });
