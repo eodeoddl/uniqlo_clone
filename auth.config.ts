@@ -8,6 +8,7 @@ import {
 
 export const authConfig = {
   pages: { signIn: '/auth/login' },
+
   callbacks: {
     authorized: async function ({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;

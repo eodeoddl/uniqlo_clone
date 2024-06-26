@@ -10,6 +10,10 @@ export const publicRoutes = [
   '/account/passwordReset',
   '/account/passwordReset/success',
   '/account/passwordEdit/success',
+  '/men',
+  '/kids',
+  '/women',
+  '/baby',
 ];
 
 /**

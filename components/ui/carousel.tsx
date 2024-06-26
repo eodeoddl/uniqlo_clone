@@ -5,10 +5,10 @@ import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useDebouncedCallback } from 'use-debounce';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useThrottle } from '@/lib/useThrottle';
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -20,6 +20,7 @@ type CarouselProps = {
   plugins?: CarouselPlugin;
   orientation?: 'horizontal' | 'vertical';
   setApi?: (api: CarouselApi) => void;
+  enableWheel?: boolean;
 };
 
 type CarouselContextProps = {
@@ -30,7 +31,7 @@ type CarouselContextProps = {
   onDotButtonClick: (index: number) => void;
   canScrollPrev: boolean;
   canScrollNext: boolean;
-  currentSnap: number;
+  // currentSnap: number;
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -57,6 +58,7 @@ const Carousel = React.forwardRef<
       plugins,
       className,
       children,
+      enableWheel = false,
       ...props
     },
     ref
@@ -70,13 +72,13 @@ const Carousel = React.forwardRef<
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
-    const [currentSnap, setCurrentSnap] = React.useState(0);
+    // const [currentSnap, setCurrentSnap] = React.useState(0);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
         return;
       }
-      setCurrentSnap(api.selectedScrollSnap());
+      // setCurrentSnap(api.selectedScrollSnap());
       setCanScrollPrev(api.canScrollPrev());
       setCanScrollNext(api.canScrollNext());
     }, []);
@@ -89,16 +91,13 @@ const Carousel = React.forwardRef<
       [api]
     );
 
-    const handleOnWheel = useDebouncedCallback(
+    const handleOnWheel = useThrottle(
       (event: React.WheelEvent<HTMLDivElement>) => {
-        console.log('wheel callback ');
-        const threshold = 20;
+        const threshold = 2;
         if (Math.abs(event.deltaY) > threshold) {
-          if (event.deltaY > 0) api?.scrollNext();
-          else api?.scrollPrev();
+          event.deltaY > 0 ? scrollNext() : scrollPrev();
         }
-      },
-      10
+      }
     );
 
     const scrollPrev = React.useCallback(() => {
@@ -157,13 +156,13 @@ const Carousel = React.forwardRef<
           onDotButtonClick,
           canScrollPrev,
           canScrollNext,
-          currentSnap,
+          // currentSnap,
         }}
       >
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
-          onWheelCapture={handleOnWheel}
+          onWheelCapture={enableWheel ? handleOnWheel : undefined}
           className={cn('relative', className)}
           role='region'
           aria-roledescription='carousel'
@@ -279,48 +278,160 @@ const CarouselNext = React.forwardRef<
 });
 CarouselNext.displayName = 'CarouselNext';
 
-type DotButtonProps = {
-  buttonCount: number;
-};
+// type DotButtonProps = {
+//   buttonCount: number;
+//   position: 'top' | 'bottom' | 'left' | 'right';
+//   children?: React.ReactNode;
+// };
 
-const CarouselDotButton = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & DotButtonProps
->(({ className, buttonCount, ...props }, ref) => {
-  const { orientation, currentSnap, onDotButtonClick } = useCarousel();
+// const CarouselDotButton = React.forwardRef<
+//   HTMLDivElement,
+//   React.HTMLAttributes<HTMLDivElement> & DotButtonProps
+// >(({ className, buttonCount, position, children, ...props }, ref) => {
+//   const { orientation, currentSnap, onDotButtonClick } = useCarousel();
 
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'absolute flex gap-3 p-3 justify-center',
-        orientation === 'horizontal'
-          ? 'bottom-0 left-0 w-full'
-          : 'flex-col right-0 top-0 h-screen',
-        className
-      )}
-      {...props}
-    >
-      {Array.from({ length: buttonCount }).map((_, i) => (
-        <button
-          key={i}
-          className={cn(
-            'rounded-full transition-all duration-300',
-            {
-              'w-3 h-3': currentSnap !== i,
-              'w-8': currentSnap === i && orientation === 'horizontal',
-              'h-8': currentSnap === i && orientation === 'vertical',
-            },
-            currentSnap !== i ? 'bg-gray-200' : 'bg-blue-500'
-          )}
-          onClick={() => onDotButtonClick(i)}
-        />
-      ))}
-    </div>
-  );
-});
+//   return (
+//     <div
+//       ref={ref}
+//       className={cn(
+//         'absolute flex gap-3 p-3 justify-center',
+//         {
+//           'left-0 top-0 w-full': position === 'top',
+//           'left-0 top-0 h-screen': position === 'left',
+//           'left-0 bottom-0 w-full': position === 'bottom',
+//           'right-0 top-0 h-screen': position === 'right',
+//           'flex-col': orientation === 'vertical',
+//         },
+//         className
+//       )}
+//       {...props}
+//     >
+//       {Array.from({ length: buttonCount }).map((_, i) => (
+//         <button
+//           key={i}
+//           className={cn(
+//             'rounded-full transition-all duration-300',
+//             {
+//               'w-3 h-3': currentSnap !== i,
+//               'w-8': currentSnap === i && orientation === 'horizontal',
+//               'h-8': currentSnap === i && orientation === 'vertical',
+//             },
+//             currentSnap !== i ? 'bg-gray-200' : 'bg-blue-500'
+//           )}
+//           onClick={() => onDotButtonClick(i)}
+//         />
+//       ))}
+//     </div>
+//   );
+// });
 
-CarouselDotButton.displayName = 'CarouselDotButton';
+// CarouselDotButton.displayName = 'CarouselDotButton';
+
+// type ButtonContainerProps = {
+//   position?: 'top' | 'bottom' | 'left' | 'right';
+//   contents: Array<React.ReactNode>;
+//   currentTab: string;
+// };
+
+// const CarouselButtonContainer = React.forwardRef<
+//   HTMLDivElement,
+//   React.HtmlHTMLAttributes<HTMLDivElement> & ButtonContainerProps
+// >(({ className, position, contents, currentTab, ...props }, ref) => {
+//   const { orientation, currentSnap, onDotButtonClick } = useCarousel();
+//   const [indicatorStyle, setIndicatorStyle] = React.useState({
+//     left: '0px',
+//     width: '0px',
+//   });
+//   const buttonRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+//   const router = useRouter();
+
+//   const updateIndicatorStyle = React.useCallback(() => {
+//     const currentIndex = contents.findIndex((node) => node === currentTab);
+//     if (currentIndex !== -1 && buttonRefs.current[currentIndex]) {
+//       const currentButton = buttonRefs.current[currentIndex];
+//       setIndicatorStyle({
+//         left: `${currentButton!.offsetLeft}px`,
+//         width: `${currentButton!.offsetWidth}px`,
+//       });
+//     }
+//     // if (buttonRefs.current[currentIndex]) {
+//     //   const currentButton = buttonRefs.current[currentIndex];
+//     //   setIndicatorStyle({
+//     //     left: `${currentButton!.offsetLeft}px`,
+//     //     width: `${currentButton!.offsetWidth}px`,
+//     //   });
+//     // }
+//     // if (buttonRefs.current[currentSnap]) {
+//     //   const currentButton = buttonRefs.current[currentSnap];
+//     //   setIndicatorStyle({
+//     //     left: `${currentButton!.offsetLeft}px`,
+//     //     width: `${currentButton!.offsetWidth}px`,
+//     //   });
+//     // }
+//   }, [contents, currentTab]);
+
+//   React.useEffect(() => {
+//     updateIndicatorStyle();
+//   }, [updateIndicatorStyle, currentTab]);
+
+//   React.useEffect(() => {
+//     const handleResize = () => updateIndicatorStyle();
+//     window.addEventListener('resize', handleResize);
+//     return () => {
+//       window.removeEventListener('resize', handleResize);
+//     };
+//   }, [updateIndicatorStyle]);
+
+//   return (
+//     <div
+//       ref={ref}
+//       className={cn(
+//         'flex gap-3 justify-center',
+//         {
+//           absolute: position !== undefined,
+//           'left-0 top-0 w-full': position === 'top',
+//           'left-0 top-0 h-screen': position === 'left',
+//           'left-0 bottom-0 w-full': position === 'bottom',
+//           'right-0 top-0 h-screen': position === 'right',
+//           'flex-col': orientation === 'vertical',
+//         },
+//         className
+//       )}
+//       {...props}
+//     >
+//       <div
+//         className='absolute rounded-sm bottom-0 left-0 h-1 bg-blue-500 transition-all duration-300'
+//         style={indicatorStyle}
+//       />
+//       {contents.map((node, i) => (
+//         <button
+//           key={i}
+//           ref={(el) => {
+//             buttonRefs.current[i] = el;
+//           }}
+//           onClick={() => {
+//             onDotButtonClick(i);
+//             setIndicatorStyle({
+//               left: `${buttonRefs.current[i]?.offsetLeft}px`,
+//               width: `${buttonRefs.current[i]?.offsetWidth}px`,
+//             });
+//             router.push(`/${node}`);
+//           }}
+//           className={cn(
+//             currentSnap === i
+//               ? 'text-blue-500 font-bold'
+//               : 'text-white font-normal',
+//             'text-2xl relative'
+//           )}
+//         >
+//           {node}
+//         </button>
+//       ))}
+//     </div>
+//   );
+// });
+
+// CarouselButtonContainer.displayName = 'CarouselButtonContainer';
 
 export {
   type CarouselApi,
@@ -329,5 +440,6 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-  CarouselDotButton,
+  // CarouselDotButton,
+  // CarouselButtonContainer,
 };

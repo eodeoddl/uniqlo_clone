@@ -1,7 +1,10 @@
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
+const { auth: middleware } = NextAuth(authConfig);
 
-export default NextAuth(authConfig).auth;
+export default middleware((req) => {});
+
+// export default NextAuth(authConfig).auth;
 
 // const { auth } = NextAuth(authConfig);
 

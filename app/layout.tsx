@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Poor_Story } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
+import React from 'react';
 
 const poor_story = Poor_Story({ subsets: ['latin'], weight: ['400'] });
 
