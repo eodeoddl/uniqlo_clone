@@ -1,8 +1,20 @@
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
+import { NextRequest, NextResponse } from 'next/server';
 const { auth: middleware } = NextAuth(authConfig);
 
-export default middleware((req) => {});
+export default middleware((request: NextRequest) => {
+  // const url = request.nextUrl.clone();
+  // const { pathname } = url;
+  // const allowedTabs = ['women', 'men', 'kids', 'baby'];
+  // const tabMatch = pathname.match(/^\/(women|men|kids|baby)$/);
+  // if (tabMatch) {
+  //   const tab = tabMatch[1];
+  //   if (!allowedTabs.includes(tab)) {
+  //     return NextResponse.redirect(new URL('/', request.url));
+  //   }
+  // }
+});
 
 // export default NextAuth(authConfig).auth;
 
