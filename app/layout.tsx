@@ -12,14 +12,18 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
+  modal,
   children,
 }: Readonly<{
+  modal: React.ReactNode;
   children: React.ReactNode;
 }>) {
   return (
     <html lang='en'>
       <body className={cn(poor_story.className, 'antialiased')}>
         {children}
+        {modal}
+        <div id='modal-root'></div>
       </body>
     </html>
   );

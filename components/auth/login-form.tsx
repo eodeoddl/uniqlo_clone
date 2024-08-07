@@ -51,7 +51,7 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className='w-10/12 sm:max-w-[500px] sm:shadow-md'>
+    <Card className='w-10/12 sm:w-fit sm:shadow-md'>
       <CardHeader>
         <Header label='안녕하세요?' />
       </CardHeader>

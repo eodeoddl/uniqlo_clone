@@ -11,3 +11,11 @@ export function isKeyOf<T extends Record<PropertyKey, unknown>>(
 ): key is keyof T {
   return key in obj;
 }
+
+export function splitDataIntoColumns<T>(data: T[], numColumns: number): T[][] {
+  const columns: T[][] = Array.from({ length: numColumns }, () => []);
+  data.forEach((item, index) => {
+    columns[index % numColumns].push(item);
+  });
+  return columns;
+}

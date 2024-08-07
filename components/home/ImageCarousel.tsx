@@ -11,43 +11,30 @@ import {
 import { useThrottle } from '@/lib/useThrottle';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-
-type ImageType = {
-  id: string;
-  urls: {
-    regular: string;
-  };
-  alt_description: string;
-  width: number;
-  height: number;
-};
-
-type ImageGroup = ImageType[];
-
-const tabs = ['women', 'men', 'kids', 'baby'];
+import { ImageGroupType, ImageType } from '@/types';
 
 interface ImageCarouselProps {
-  imageGroups: ImageGroup[];
+  imageGroup: ImageGroupType[];
 }
 
-export default function ImageCarousel({ imageGroups }: ImageCarouselProps) {
+export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
   const pathname = usePathname();
   const [carouselApi, setCarouselpi] = useState<CarouselApi>();
-  const currentTab = pathname.split('/')[1] || 'women';
+  const currentTab = pathname.split('/')[1] || imageGroup[0].name;
 
   useEffect(() => {
-    const index = tabs.indexOf(currentTab);
+    const index = imageGroup.findIndex(({ name }) => name === currentTab);
     if (carouselApi && index !== -1) {
       carouselApi.scrollTo(index);
     }
-  }, [carouselApi, currentTab]);
+  }, [carouselApi, currentTab, imageGroup]);
 
   return (
     <Carousel setApi={setCarouselpi}>
       <CarouselContent className='h-screen'>
-        {imageGroups.map((images, i) => (
+        {imageGroup.map(({ name, images }) => (
           <CarouselItem
-            key={i}
+            key={name}
             className='flex-none w-full h-full flex items-center justify-center'
           >
             <VerticalCarousel images={images} />
@@ -102,8 +89,11 @@ const VerticalCarousel = ({ images }: { images: ImageType[] }) => {
           >
             <div className='w-full h-full relative'>
               <Image
-                src={image.urls.regular}
-                alt={image.alt_description}
+                src={image.urls.raw}
+                alt={image.description || 'Image'}
+                sizes='(max-width: 400px) 400px,
+                       (max-width: 1080px) 1080px,
+                       2000px'
                 fill
                 style={{ objectFit: 'cover' }}
               />

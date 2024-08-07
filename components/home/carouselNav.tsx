@@ -1,12 +1,12 @@
+import { tabs } from '@/lib/constance';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
-const tabs = ['women', 'men', 'kids', 'baby'];
 
 export default function CarouselNav() {
   const pathname = usePathname();
-  const currentTab = pathname.split('/')[1] || 'women';
+  const currentTab = pathname.split('/')[1] || tabs[0].en;
   const underlineRef = useRef<HTMLDivElement>(null);
   const tabsRefs = useRef<null | Map<string, HTMLAnchorElement>>(null);
   const getTabs = () => {
@@ -37,22 +37,22 @@ export default function CarouselNav() {
 
   return (
     <div className='flex absolute w-full left-0 top-full justify-around mt-4 sm:mt-0 sm:justify-start sm:w-fit sm:top-1/2 sm:-translate-y-1/2 sm:left-1/2 sm:-translate-x-2/4 z-50 gap-6 pb-2 bg-transparent h-full'>
-      {tabs.map((tab) => (
+      {tabs.map(({ ko, en }, i) => (
         <Link
-          href={`/${tab}`}
+          href={`/${en}`}
           ref={(el) => {
             const tabs = getTabs();
-            el ? tabs.set(tab, el) : tabs.delete(tab);
+            el ? tabs.set(en, el) : tabs.delete(en);
           }}
-          key={tab}
+          key={en}
           className={cn(
-            'text-2xl sm:text-3xl text-white drop-shadow-[1px_1px_1px_black]',
+            'text-xl sm:text-2xl xl:text-3xl text-white drop-shadow-[1px_1px_1px_black]',
             {
-              'font-bold': tab === currentTab,
+              'font-bold': en === currentTab,
             }
           )}
         >
-          {tab}
+          {ko}
         </Link>
       ))}
       <div

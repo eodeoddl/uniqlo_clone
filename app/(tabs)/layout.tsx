@@ -1,37 +1,41 @@
+import { auth } from '@/auth';
 import BottomNavigation from '@/components/home/bottom_nav/nav';
 import ImageCarousel from '@/components/home/ImageCarousel';
 import TopNavigation from '@/components/home/top_nav/navi';
-
-const fetchImages = async (count: number, page: number) => {
-  const res = await fetch(
-    `https://api.unsplash.com/photos?page=${page}&per_page=${count}`,
-    {
-      method: 'GET',
-      headers: {
-        'Accept-Version': 'v1',
-        Authorization: 'Client-ID vR6XIkM8AMjF3q-aEtKZd07s1STgb0hzwMtiNhkhtHI',
-      },
-    }
-  );
-  return await res.json();
-};
+import { tabs } from '@/lib/constance';
+import { db } from '@/lib/db';
+import { ImageType } from '@/types';
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const imageGroups = await Promise.all([
-    fetchImages(5, 1),
-    fetchImages(4, 2),
-    fetchImages(3, 3),
-    fetchImages(5, 4),
-  ]);
+  const imageGroup = await Promise.all(
+    tabs.map(async ({ en }) => {
+      const images = (await db.photo.findMany({
+        where: {
+          topics: {
+            some: {
+              topic: {
+                slug: en,
+              },
+            },
+          },
+        },
+        take: 10,
+      })) as ImageType[];
+      return { name: en, images };
+    })
+  );
+
+  const session = await auth();
+
   return (
     <div className='relative w-screen h-screen'>
       <TopNavigation />
-      <ImageCarousel imageGroups={imageGroups} />
-      <BottomNavigation />
+      <ImageCarousel imageGroup={imageGroup} />
+      <BottomNavigation session={session} />
       {children}
     </div>
   );

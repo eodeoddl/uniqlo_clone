@@ -15,7 +15,9 @@ export const authConfig = {
       const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
       if (isApiAuthRoute) return true;
 
-      const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+      const isPublicRoute =
+        publicRoutes.includes(nextUrl.pathname) ||
+        publicRoutes.some((route) => nextUrl.pathname.startsWith(route));
       const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
       if (isAuthRoute) {

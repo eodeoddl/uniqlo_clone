@@ -24,9 +24,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       }
     }
 
-    // if (error instanceof z.ZodError) {
-    //   console.log('zod error 보자');
-    // }
     throw error;
   }
 };

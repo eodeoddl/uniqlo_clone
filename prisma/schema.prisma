@@ -56,3 +56,62 @@ model Verification {
   password    String?
   expires_at  DateTime
 }
+
+model Photo {
+  id                String           @id
+  slug              String
+  alternative_slugs Json
+  width             Int
+  height            Int
+  description       String?
+  alt_description   String?
+  urls              Json
+  links             Json
+  likes             Int
+  liked_by_user     Boolean
+  views             Int
+  downloads         Int
+  tags              TagOnPhotos[]
+  tags_preview      TagPreview[]
+  topics            TopicOnPhotos[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  type      String
+  title     String   @unique
+  photos    TagOnPhotos[]
+}
+
+model TagPreview {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  photoId   String
+  photo     Photo    @relation(fields: [photoId], references: [id])
+}
+
+model Topic {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  photos    TopicOnPhotos[]
+}
+
+model TagOnPhotos {
+  id        Int      @id @default(autoincrement())
+  photoId   String
+  tagId     String
+  photo     Photo    @relation(fields: [photoId], references: [id])
+  tag       Tag      @relation(fields: [tagId], references: [id])
+}
+
+model TopicOnPhotos {
+  id        Int      @id @default(autoincrement())
+  photoId   String
+  topicId   String
+  photo     Photo    @relation(fields: [photoId], references: [id])
+  topic     Topic    @relation(fields: [topicId], references: [id])
+}
+
+

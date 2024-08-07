@@ -17,6 +17,7 @@ import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { useState, useTransition } from 'react';
 import { sendResisterToken } from '@/actions/resister';
+import { redirect } from 'next/navigation';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -36,9 +37,9 @@ export default function ResisterForm() {
     setError('');
 
     startTransition(async () => {
-      const res = await sendResisterToken(values);
-
-      if (res?.error) setError(error);
+      const { redirectPath, error } = await sendResisterToken(values);
+      if (redirectPath) redirect(redirectPath);
+      else if (error) setError(error);
     });
   };
 
