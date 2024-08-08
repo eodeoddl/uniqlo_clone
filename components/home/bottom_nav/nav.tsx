@@ -11,8 +11,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
 
-export default function BottomNavigation({ session }: { session: any }) {
+export default function BottomNavigation({
+  session,
+}: {
+  session: Session | null;
+}) {
   const [searchActive, setSearchActive] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { push } = useRouter();

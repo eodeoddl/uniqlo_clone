@@ -16,7 +16,7 @@ import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { login } from '@/actions/login';
 import { useState, useTransition } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import Header from './header';
 import BackButton from './back-button';
@@ -31,7 +31,7 @@ export default function LoginForm() {
       password: '',
     },
   });
-
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectionWithError =
     searchParams.get('error') === 'OAuthAccountNotLinked'
@@ -46,8 +46,11 @@ export default function LoginForm() {
 
     startTransition(async () => {
       const res = await login(values);
-      setError(res?.error);
+      if (res?.error) setError(res?.error);
+      // else router.back();
     });
+    console.log('end transition => ', error, isPending);
+    if (!isPending && !error) router.back();
   };
 
   return (

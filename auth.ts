@@ -13,6 +13,7 @@ import { deleteVerification, getVerification } from './data/verification-token';
 declare module 'next-auth' {
   interface Session {
     user: {
+      id: string;
       role?: 'ADMIN' | 'USER';
       token?: string;
       refreshToken?: string;
@@ -29,6 +30,7 @@ export const {
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
+  pages: { signIn: '/auth/login' },
   events: {
     async linkAccount({ user }) {
       await db.user.update({
@@ -51,6 +53,7 @@ export const {
         ...session,
         user: {
           ...session.user,
+          id: token.sub,
           role: token.role,
           token: token.token,
           refreshToken: token.refreshToken,

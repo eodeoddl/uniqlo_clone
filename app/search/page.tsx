@@ -1,3 +1,4 @@
+import { auth } from '@/auth';
 import Search from '@/components/search/search';
 import { fetchBySearch } from '@/data/photo';
 import { keywords } from '@/lib/constance';
@@ -10,6 +11,7 @@ export default async function Page({
   searchParams?: { query?: string };
   children: React.ReactNode;
 }) {
+  const session = await auth();
   const query = searchParams?.query || '';
   const keyword = keywords.find(({ en }) => query === en);
   const images = (await fetchBySearch(query)) as ImageType[];
@@ -22,7 +24,13 @@ export default async function Page({
 
   return (
     <>
-      <Search title={ko} desc={desc} query={query} initialData={images} />
+      <Search
+        title={ko}
+        desc={desc}
+        query={query}
+        initialData={images}
+        session={session}
+      />
       {children}
     </>
   );

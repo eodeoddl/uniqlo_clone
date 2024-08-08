@@ -7,11 +7,6 @@ import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
-interface AlertDialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content> {
-  useRouterModal?: boolean;
-}
-
 const AlertDialog = AlertDialogPrimitive.Root;
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
@@ -33,10 +28,14 @@ const AlertDialogOverlay = React.forwardRef<
 ));
 AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
 
+interface AlertDialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content> {
+  useRouterModal?: boolean;
+}
+
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   AlertDialogContentProps
-  // React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
 >(({ className, useRouterModal, ...props }, ref) => {
   const router = useRouter();
   return (
