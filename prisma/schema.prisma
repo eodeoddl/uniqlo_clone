@@ -29,6 +29,7 @@ model User {
   role          UserRole  @default(USER)
   accounts      Account[]
   likedPhotos   String[]  @default([])
+  collections   Collection[]
 }
 
 model Account {
@@ -75,6 +76,8 @@ model Photo {
   tags              TagOnPhotos[]
   tags_preview      TagPreview[]
   topics            TopicOnPhotos[]
+  collections       CollectionOnPhotos[]
+
 }
 
 model Tag {
@@ -113,6 +116,24 @@ model TopicOnPhotos {
   topicId   String
   photo     Photo    @relation(fields: [photoId], references: [id])
   topic     Topic    @relation(fields: [topicId], references: [id])
+}
+
+model Collection {
+  id        String           @id @default(cuid())
+  title     String           
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos    CollectionOnPhotos[]  
+}
+
+model CollectionOnPhotos {
+  id          Int      @id @default(autoincrement())
+  photoId     String
+  collectionId String
+  collection  Collection @relation(fields: [collectionId], references: [id])
+  photo       Photo      @relation(fields: [photoId], references: [id])
+
+  @@unique([photoId, collectionId])
 }
 
 

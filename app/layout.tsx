@@ -19,6 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // 루트 페이지는 /(tabs)/[tab]/page.tsx
+    // 자세한 설정은 next.config.mjs 파일확인
     <html lang='en'>
       <body className={cn(poor_story.className, 'antialiased')}>
         {children}

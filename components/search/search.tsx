@@ -5,12 +5,13 @@ import Image from 'next/image';
 import { fetchBySearch } from '@/data/photo';
 import { ImageType } from '@/types';
 import { Download, Heart, Plus } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import DownloadButton from './downloadButton';
 import { Session } from 'next-auth';
 import {
   calculateColumns,
+  cn,
   findIndexOfShortestArray,
   splitDataIntoColumns,
 } from '@/lib/utils';
@@ -39,6 +40,7 @@ export default function Search({
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   // 무한스크롤 데이터 페칭
@@ -153,25 +155,32 @@ export default function Search({
       <p className='text-2xl'>{desc}</p>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-10'>
         {columns.map((column, colIndex) => (
-          <div key={colIndex} className='flex flex-col gap-4 relative'>
+          <div key={colIndex} className='flex flex-col gap-4'>
             {column.map((item) => (
-              <Link
+              <div
                 key={item.id}
-                href={`${pathname}/${item.id}`}
-                className='relative w-full rounded-lg overflow-hidden cursor-zoom-in group'
+                className='relative group cursor-zoom-in rounded-lg overflow-hidden'
                 style={{ aspectRatio: `${item.width} / ${item.height}` }}
               >
-                <Image
-                  src={item.urls.regular}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes='(max-width: 400px) 100px,
-                       (max-width: 1080px) 200px,
-                       300px'
-                  alt={item.id}
-                />
-                <div className='absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 '>
-                  <div className='absolute top-4 right-4 flex gap-2.5'>
+                <Link href={`${pathname}/${item.id}`}>
+                  <Image
+                    src={item.urls.regular}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes='(max-width: 400px) 200px,
+                       (max-width: 1080px) 500px,
+                       1080px'
+                    alt={item.id}
+                  />
+                </Link>
+                <div
+                  className={cn(
+                    columns.length === 1
+                      ? ''
+                      : 'absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'
+                  )}
+                >
+                  <div className='absolute top-4 right-4 flex gap-2.5 pointer-events-auto'>
                     <button
                       title='이 이미지에 좋아요 표시'
                       onClick={(e) =>
@@ -190,7 +199,13 @@ export default function Search({
                     </button>
                     <button
                       title='이 이미지를 컬렉션에 추가'
-                      onClick={(e) => handleAuthCheck(e, () => {})}
+                      onClick={(e) =>
+                        handleAuthCheck(e, () =>
+                          router.push(
+                            `/collections/${item.id}?callback=${pathname}?${searchParams}`
+                          )
+                        )
+                      }
                     >
                       <Plus size='32' className='image-cover-icon' />
                     </button>
@@ -203,7 +218,7 @@ export default function Search({
                     <Download size='32' className='image-cover-icon' />
                   </DownloadButton>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         ))}
