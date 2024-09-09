@@ -61,3 +61,33 @@ export async function toggleCollection(collectionId: string, photoId: string) {
 
   return { action: 'added', collectionId, photoId };
 }
+
+export async function createNewCollection(
+  userId: string,
+  photoId: string,
+  title: string,
+  description?: string
+) {
+  // 1. 새로운 컬렉션 생성
+  const newCollection = await db.collection.create({
+    data: {
+      title,
+      description,
+      userId,
+    },
+  });
+
+  // 2. 생성된 컬렉션에 사진 추가
+  await db.collectionOnPhotos.create({
+    data: {
+      collectionId: newCollection.id,
+      photoId,
+    },
+  });
+
+  return {
+    action: 'created',
+    collectionId: newCollection.id,
+    photoId,
+  };
+}

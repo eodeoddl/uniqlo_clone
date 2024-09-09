@@ -1,4 +1,4 @@
-import { Photo } from '@prisma/client';
+import { Collection, Photo } from '@prisma/client';
 
 type PhotoJsonField = Record<string, string>;
 
@@ -10,4 +10,10 @@ export type ImageType = Omit<Photo, 'urls' | 'links'> & {
 export type ImageGroupType = {
   name: string;
   images: ImageType[];
+};
+
+export type CollectionWithPhotos = Collection & {
+  photos: {
+    photo: Photo;
+  }[];
 };

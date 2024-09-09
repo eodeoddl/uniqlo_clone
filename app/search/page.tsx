@@ -1,8 +1,9 @@
+import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { auth } from '@/auth';
 import Search from '@/components/search/search';
 import { fetchBySearch } from '@/data/photo';
 import { keywords } from '@/lib/constance';
-import { ImageType } from '@/types';
+import { CollectionWithPhotos, ImageType } from '@/types';
 
 export default async function Page({
   searchParams,
@@ -15,6 +16,10 @@ export default async function Page({
   const query = searchParams?.query || '';
   const keyword = keywords.find(({ en }) => query === en);
   const images = (await fetchBySearch(query)) as ImageType[];
+  const collections: CollectionWithPhotos[] = await getAllCollectionsByUser(
+    session?.user.id!
+  );
+  console.log('server search Page collection => ', collections);
 
   if (!keyword) {
     return <div>Keyword not found</div>;
@@ -30,6 +35,7 @@ export default async function Page({
         query={query}
         initialData={images}
         session={session}
+        collections={collections}
       />
       {children}
     </>

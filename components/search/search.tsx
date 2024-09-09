@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import BottomNavigation from '../home/bottom_nav/nav';
 import Image from 'next/image';
 import { fetchBySearch } from '@/data/photo';
-import { ImageType } from '@/types';
+import { CollectionWithPhotos, ImageType } from '@/types';
 import { Download, Heart, Plus } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -17,6 +17,12 @@ import {
 } from '@/lib/utils';
 import clickLike from '@/actions/handleLike';
 import useStateManager from '@/lib/useStateManager';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
+import CollectionsModal from '../collections/collections-modal';
 
 interface SearchProps {
   title: string;
@@ -24,6 +30,7 @@ interface SearchProps {
   query: string;
   initialData: ImageType[];
   session: Session | null;
+  collections: CollectionWithPhotos[];
 }
 
 export default function Search({
@@ -32,16 +39,20 @@ export default function Search({
   query,
   initialData,
   session,
+  collections,
 }: SearchProps) {
   const { state, handleStateChange, handlePushState, getUpdateQueue } =
     useStateManager<ImageType>(initialData);
   const [columns, setColumns] = useState<ImageType[][]>([]);
+  const [open, setOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<ImageType | null>(null);
   const skipRef = useRef(1);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
+
+  console.log('search component collection props  => ', collections);
 
   // 무한스크롤 데이터 페칭
   const fetchMoreData = useCallback(async () => {
@@ -92,6 +103,12 @@ export default function Search({
   // Like UI 업데이트 값계산
   const getLikedByUser = (item: ImageType) => {
     return state.get(item.id)?.liked_by_user ?? item.liked_by_user;
+  };
+
+  // Collection 추가 버튼
+  const handleCollectionButton = (item: ImageType) => {
+    setSelectedPhoto(item);
+    setOpen((prev) => !prev);
   };
 
   // Like상태 서버측 업데이트
@@ -200,11 +217,7 @@ export default function Search({
                     <button
                       title='이 이미지를 컬렉션에 추가'
                       onClick={(e) =>
-                        handleAuthCheck(e, () =>
-                          router.push(
-                            `/collections/${item.id}?callback=${pathname}?${searchParams}`
-                          )
-                        )
+                        handleAuthCheck(e, () => handleCollectionButton(item))
                       }
                     >
                       <Plus size='32' className='image-cover-icon' />
@@ -225,6 +238,15 @@ export default function Search({
       </div>
       <div ref={loader}></div>
       <BottomNavigation session={session} />
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] sm:p-0'>
+          <CollectionsModal
+            session={session}
+            photo={selectedPhoto}
+            collections={collections}
+          />
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

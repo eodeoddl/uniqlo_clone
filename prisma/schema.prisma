@@ -119,11 +119,12 @@ model TopicOnPhotos {
 }
 
 model Collection {
-  id        String           @id @default(cuid())
-  title     String           
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  photos    CollectionOnPhotos[]  
+  id            String           @id @default(cuid())
+  title         String
+  description   String?           
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos        CollectionOnPhotos[]  
 }
 
 model CollectionOnPhotos {
