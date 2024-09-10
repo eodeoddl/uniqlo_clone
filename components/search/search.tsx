@@ -17,11 +17,7 @@ import {
 } from '@/lib/utils';
 import clickLike from '@/actions/handleLike';
 import useStateManager from '@/lib/useStateManager';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from '../ui/alert-dialog';
+import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
 import CollectionsModal from '../collections/collections-modal';
 
 interface SearchProps {
@@ -242,7 +238,7 @@ export default function Search({
         <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] sm:p-0'>
           <CollectionsModal
             session={session}
-            photo={selectedPhoto}
+            selectedPhoto={selectedPhoto}
             collections={collections}
           />
         </AlertDialogContent>

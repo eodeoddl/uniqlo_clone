@@ -18,8 +18,12 @@ import { Textarea } from '../ui/textarea';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { createNewCollection } from '@/actions/handleCollection';
+import {
+  createNewCollection,
+  toggleCollection,
+} from '@/actions/handleCollection';
 import { CollectionWithPhotos } from '@/types';
+import { useDebounce } from '@/lib/useDebounce';
 
 const formSchema = z.object({
   title: z.string({
@@ -30,11 +34,11 @@ const formSchema = z.object({
 });
 
 export default function CollectionsModal({
-  photo,
+  selectedPhoto,
   session,
   collections,
 }: {
-  photo: any;
+  selectedPhoto: any;
   session: any;
   collections: CollectionWithPhotos[];
 }) {
@@ -46,28 +50,64 @@ export default function CollectionsModal({
 
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
     const { title, description } = value;
-    const { collectionId, photoId } = await createNewCollection(
+    const newCollection = await createNewCollection(
       session.user.id,
-      photo.id,
+      selectedPhoto.id,
       title,
       description
     );
-    // console.log('새로운 컬렉션 먄들기 action ', collectionId, photoId);
+    setUserCollections((prevCollections) => [
+      ...prevCollections,
+      newCollection,
+    ]);
+    setIsCreating(false);
   };
 
-  const isPhotoInCollection = (collection: CollectionWithPhotos) =>
-    collection.photos.some(
-      (collectionPhoto) => collectionPhoto.photoId === photo.id
-    );
+  const isPhotoInCollection = (collection: CollectionWithPhotos) => {
+    console.log(collection);
+    return collection.photos.some((photo) => photo.id === selectedPhoto.id);
+  };
 
-  const handleToggelCollection = () => {};
+  const updateCollectionOnServer = useDebounce(async (collectionId: string) => {
+    try {
+      await toggleCollection(collectionId, selectedPhoto.id);
+    } catch (error) {
+      console.error(error);
+    }
+  }, 500);
+
+  const handleToggelCollection = (collectionId: string) => {
+    setUserCollections((prevCollections) =>
+      prevCollections.map((collection) => {
+        // console.log('check toggle state => ', isPhotoInCollection(collection));
+        // console.log(
+        //   'handle toggle collection => ',
+        //   prevCollections,
+        //   collection
+        // );
+        if (collection.id === collectionId) {
+          return {
+            ...collection,
+            photos: isPhotoInCollection(collection)
+              ? collection.photos.filter(
+                  (photo) => photo.id !== selectedPhoto.id
+                )
+              : [...collection.photos, selectedPhoto],
+          };
+        }
+        return collection;
+      })
+    );
+    updateCollectionOnServer(collectionId);
+  };
+
   return (
     <>
       {/* 선택 이미지 */}
       <div className='relative h-full'>
         <Image
-          src={photo.urls.small}
-          alt={photo.alt_description || photo.id}
+          src={selectedPhoto.urls.small}
+          alt={selectedPhoto.alt_description || selectedPhoto.id}
           fill
         />
       </div>
@@ -148,18 +188,26 @@ export default function CollectionsModal({
               <div
                 key={collection.id}
                 className='relative group flex justify-between min-h-20 items-center p-4 px-7 rounded-lg sm:text-2xl text-white cursor-pointer mt-8 overflow-hidden'
+                onClick={() => handleToggelCollection(collection.id)}
               >
                 {/* 컬렉션 대표 이미지 */}
-                <Image
-                  alt={collection.id}
-                  src={collection.photos.at(-1)?.photo.urls.regular}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
+                {collection.photos.at(-1)?.urls && (
+                  <Image
+                    alt={collection.id}
+                    src={collection.photos.at(-1)?.urls.regular}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                )}
                 {/* 반투명 오버레이 */}
                 <div className='absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none p-4'></div>
                 {/* 컬렉션 타이틀 */}
-                <span className='z-10'>{collection.title}</span>
+                <div className='z-10'>
+                  <span className='text-xs block'>
+                    사진 {collection.photos.length}장
+                  </span>
+                  <span>{collection.title}</span>
+                </div>
                 {/* 컬렉션 토글 아이콘 */}
                 {isPhotoInCollection(collection) && (
                   <Check className='group-hover:hidden z-10' />

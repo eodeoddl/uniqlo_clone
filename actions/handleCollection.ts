@@ -16,7 +16,11 @@ export async function getAllCollectionsByUser(userId: string) {
     },
   });
 
-  return collections;
+  // CollectionOnPhotos[] -> Photo[] 변환 작업
+  return collections.map((collection) => ({
+    ...collection,
+    photos: collection.photos.map((collectionPhoto) => collectionPhoto.photo), // CollectionOnPhotos[]에서 Photo[]로 변환
+  }));
 }
 
 async function getLatestThreePhotosInCollection(collectionId: string) {
@@ -68,26 +72,30 @@ export async function createNewCollection(
   title: string,
   description?: string
 ) {
-  // 1. 새로운 컬렉션 생성
   const newCollection = await db.collection.create({
     data: {
       title,
       description,
       userId,
+      photos: {
+        create: {
+          photoId,
+        },
+      },
     },
-  });
-
-  // 2. 생성된 컬렉션에 사진 추가
-  await db.collectionOnPhotos.create({
-    data: {
-      collectionId: newCollection.id,
-      photoId,
+    include: {
+      photos: {
+        include: {
+          photo: true, // photo 데이터와 함께 포함
+        },
+      },
     },
   });
 
   return {
-    action: 'created',
-    collectionId: newCollection.id,
-    photoId,
+    ...newCollection,
+    photos: newCollection.photos.map(
+      (collectionPhoto) => collectionPhoto.photo
+    ),
   };
 }
