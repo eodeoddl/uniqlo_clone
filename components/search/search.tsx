@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { fetchBySearch } from '@/data/photo';
 import { CollectionWithPhotos, ImageType } from '@/types';
 import { Download, Heart, Plus } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DownloadButton from './downloadButton';
 import { Session } from 'next-auth';
@@ -47,8 +47,6 @@ export default function Search({
   const loader = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
-
-  console.log('search component collection props  => ', collections);
 
   // 무한스크롤 데이터 페칭
   const fetchMoreData = useCallback(async () => {

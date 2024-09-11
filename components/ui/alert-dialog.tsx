@@ -38,8 +38,14 @@ const AlertDialogContent = React.forwardRef<
   AlertDialogContentProps
 >(({ className, useRouterModal, ...props }, ref) => {
   const router = useRouter();
+  const modalRoot =
+    typeof window !== 'undefined'
+      ? document.getElementById('modal-root')
+      : null;
+
+  if (!modalRoot) return null;
   return (
-    <AlertDialogPortal container={document.getElementById('modal-root')}>
+    <AlertDialogPortal container={modalRoot}>
       <AlertDialogOverlay
         onClick={useRouterModal ? () => router.back() : undefined}
       />

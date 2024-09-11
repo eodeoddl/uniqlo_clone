@@ -18,12 +18,10 @@ import { Textarea } from '../ui/textarea';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import {
-  createNewCollection,
-  toggleCollection,
-} from '@/actions/handleCollection';
+import { createNewCollection } from '@/actions/handleCollection';
 import { CollectionWithPhotos } from '@/types';
 import { useDebounce } from '@/lib/useDebounce';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   title: z.string({
@@ -47,6 +45,7 @@ export default function CollectionsModal({
   });
   const [isCreating, setIsCreating] = useState(false);
   const [userCollections, setUserCollections] = useState(collections);
+  const { refresh } = useRouter();
 
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
     const { title, description } = value;
@@ -56,35 +55,50 @@ export default function CollectionsModal({
       title,
       description
     );
+
+    await fetch('/api/revalidate', {
+      method: 'POST',
+      body: JSON.stringify({ path: '/search' }),
+    });
+
     setUserCollections((prevCollections) => [
       ...prevCollections,
       newCollection,
     ]);
+
+    refresh();
     setIsCreating(false);
   };
 
   const isPhotoInCollection = (collection: CollectionWithPhotos) => {
-    console.log(collection);
     return collection.photos.some((photo) => photo.id === selectedPhoto.id);
   };
 
-  const updateCollectionOnServer = useDebounce(async (collectionId: string) => {
-    try {
-      await toggleCollection(collectionId, selectedPhoto.id);
-    } catch (error) {
-      console.error(error);
+  //
+  const updateCollectionOnServer = useDebounce(
+    async (collectionId: string, abortController: AbortController) => {
+      try {
+        await fetch('/api/collections/toggle', {
+          method: 'POST',
+          body: JSON.stringify({ collectionId, photoId: selectedPhoto.id }),
+          signal: abortController.signal, // AbortController로 요청 취소 가능하게 설정
+        });
+
+        await fetch('/api/revalidate', {
+          method: 'POST',
+          body: JSON.stringify({ path: '/search' }),
+        });
+
+        refresh();
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, 500);
+  );
 
   const handleToggelCollection = (collectionId: string) => {
     setUserCollections((prevCollections) =>
       prevCollections.map((collection) => {
-        // console.log('check toggle state => ', isPhotoInCollection(collection));
-        // console.log(
-        //   'handle toggle collection => ',
-        //   prevCollections,
-        //   collection
-        // );
         if (collection.id === collectionId) {
           return {
             ...collection,

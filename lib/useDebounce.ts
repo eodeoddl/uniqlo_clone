@@ -1,42 +1,46 @@
-import { useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
+// Debounce 함수와 AbortController를 사용하여 이전 API 요청을 취소하는 방식
 export const useDebounce = <T extends unknown[]>(
-  callback: (...params: T) => void,
-  delay = 1000
+  callback: (...params: [...T, AbortController]) => void,
+  delay = 500
 ) => {
-  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastArgs = useRef<T | null>(null);
-  const lastCallTime = useRef<number>(Date.now()); // 마지막 호출 시간을 기록
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const debounceFn = (...args: T) => {
-    const now = Date.now();
-    const timeSinceLastCall = now - lastCallTime.current;
-
-    // 기존 타임아웃을 취소하고 새로운 타임아웃 설정
-    if (timeout.current) {
-      clearTimeout(timeout.current);
+  const debouncedFn = (...args: T) => {
+    // 1. 기존 타이머가 있으면 취소
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
 
-    // 마지막 호출 시간과 인자 저장
-    lastArgs.current = args;
-    lastCallTime.current = now;
+    // 2. 기존 AbortController 요청이 있으면 취소
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort(); // 이전 API 요청 취소
+    }
 
-    // 남은 대기 시간을 계산하고 그 시간만큼 대기 후 실행
-    timeout.current = setTimeout(() => {
-      callback(...(lastArgs.current || args));
-      lastCallTime.current = Date.now();
-      timeout.current = null; // 타이머 초기화
-    }, delay - timeSinceLastCall);
+    // 3. 새로운 AbortController 생성
+    abortControllerRef.current = new AbortController();
+
+    // 4. 새로운 타이머 설정
+    timeoutRef.current = setTimeout(() => {
+      if (abortControllerRef.current) {
+        callback(...args, abortControllerRef.current); // AbortController를 콜백에 전달
+      }
+    }, delay);
   };
 
-  // 컴포넌트가 언마운트될 때 타임아웃 정리
   useEffect(() => {
+    // 컴포넌트가 언마운트될 때 타이머 및 AbortController 정리
     return () => {
-      if (timeout.current) {
-        clearTimeout(timeout.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, []);
 
-  return debounceFn;
+  return debouncedFn;
 };

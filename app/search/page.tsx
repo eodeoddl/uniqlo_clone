@@ -19,7 +19,6 @@ export default async function Page({
   const collections: CollectionWithPhotos[] = await getAllCollectionsByUser(
     session?.user.id!
   );
-  console.log('server search Page collection => ', collections);
 
   if (!keyword) {
     return <div>Keyword not found</div>;
