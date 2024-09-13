@@ -95,9 +95,20 @@ export default function BottomNavigation({
             </div>
           </PopoverTrigger>
           {session && (
-            <PopoverContent sideOffset={8}>
-              <div className='font-bold'>{session?.user.name}님</div>
-              <button onClick={() => signOut()}>로그아웃</button>
+            <PopoverContent
+              sideOffset={8}
+              className='flex flex-col items-start gap-3'
+            >
+              <button onClick={() => push('/account/profile')}>
+                프로필 보기
+              </button>
+              <button onClick={() => push('/account/settings')}>
+                계정 설정
+              </button>
+              <button onClick={() => signOut()}>
+                <span className='font-bold mr-2'>{session?.user.name}님</span>
+                로그아웃
+              </button>
             </PopoverContent>
           )}
         </Popover>

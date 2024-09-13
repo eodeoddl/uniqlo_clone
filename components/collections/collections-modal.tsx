@@ -1,7 +1,11 @@
 'use client';
 
-import { Check, Minus, Plus } from 'lucide-react';
-import { AlertDialogDescription, AlertDialogTitle } from '../ui/alert-dialog';
+import { Check, Minus, Plus, X } from 'lucide-react';
+import {
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '../ui/alert-dialog';
 import { useState } from 'react';
 import {
   Form,
@@ -35,10 +39,12 @@ export default function CollectionsModal({
   selectedPhoto,
   session,
   collections,
+  onClose,
 }: {
   selectedPhoto: any;
   session: any;
   collections: CollectionWithPhotos[];
+  onClose: () => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -118,7 +124,7 @@ export default function CollectionsModal({
   return (
     <>
       {/* 선택 이미지 */}
-      <div className='relative h-full'>
+      <div className='relative h-full hidden sm:block'>
         <Image
           src={selectedPhoto.urls.small}
           alt={selectedPhoto.alt_description || selectedPhoto.id}
@@ -185,14 +191,17 @@ export default function CollectionsModal({
         ) : (
           <>
             {/* 컬렉션 리스트 & 컬렉션 생성 UI */}
-            <AlertDialogTitle className='sm:font-bold sm:text-3xl'>
-              컬렉션 생성
+            <AlertDialogTitle className='flex justify-between w-full sm:font-bold sm:text-3xl'>
+              <span>컬렉션 생성</span>
+              <AlertDialogCancel>
+                <X onClick={onClose} className='cursor-pointer inline-block' />
+              </AlertDialogCancel>
             </AlertDialogTitle>
             <AlertDialogDescription className='hidden'>
               자신만의 컬렉션을 만들어 보세요.
             </AlertDialogDescription>
             <div
-              className='flex justify-between min-h-16 items-center border-dashed border-2 border-slate-400 p-2 pl-3 rounded-lg sm:text-2xl text-slate-400 cursor-pointer mt-8'
+              className='flex justify-between w-full min-h-16 items-center border-dashed border-2 border-slate-400 p-2 pl-3 rounded-lg sm:text-2xl text-slate-400 cursor-pointer mt-8'
               onClick={() => setIsCreating((prev) => !prev)}
             >
               새 컬렉션 생성

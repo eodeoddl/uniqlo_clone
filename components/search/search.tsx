@@ -233,11 +233,12 @@ export default function Search({
       <div ref={loader}></div>
       <BottomNavigation session={session} />
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] sm:p-0'>
+        <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-0'>
           <CollectionsModal
             session={session}
             selectedPhoto={selectedPhoto}
             collections={collections}
+            onClose={() => setOpen(false)}
           />
         </AlertDialogContent>
       </AlertDialog>

@@ -129,20 +129,22 @@ AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
 
 const AlertDialogCancel = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel> & {
+    useRouterModal?: boolean;
+  }
+>(({ className, useRouterModal, ...props }, ref) => {
   const router = useRouter();
   return (
     <AlertDialogPrimitive.Cancel
       ref={ref}
-      className={cn(
-        buttonVariants({ variant: 'outline' }),
-        'mt-2 sm:mt-0',
-        className
-      )}
+      // className={cn(
+      //   buttonVariants({ variant: 'outline' }),
+      //   'mt-2 sm:mt-0',
+      //   className
+      // )}
       {...props}
       onClick={(e) => {
-        router.back();
+        if (useRouterModal) router.back();
         if (props.onClick) props.onClick(e);
       }}
     />

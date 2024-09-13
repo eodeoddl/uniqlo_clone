@@ -13,9 +13,5 @@ export type ImageGroupType = {
 };
 
 export type CollectionWithPhotos = Collection & {
-  // photos: {
-  //   photo: Photo;
-  // }[];
-
   photos: Photo[];
 };
