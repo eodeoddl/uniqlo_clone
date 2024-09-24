@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import BottomNavigation from '../home/bottom_nav/nav';
 import Image from 'next/image';
 import { fetchBySearch } from '@/data/photo';

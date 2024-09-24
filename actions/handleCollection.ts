@@ -23,19 +23,6 @@ export async function getAllCollectionsByUser(userId: string) {
   }));
 }
 
-async function getLatestThreePhotosInCollection(collectionId: string) {
-  const latestPhotos = await db.collectionOnPhotos.findMany({
-    where: { collectionId },
-    orderBy: { id: 'desc' }, // 최근에 추가된 순서대로 정렬
-    take: 3, // 상위 3개 항목만 가져오기
-    include: {
-      photo: true, // 관련된 사진 정보를 함께 가져오기
-    },
-  });
-
-  return latestPhotos;
-}
-
 export async function toggleCollection(collectionId: string, photoId: string) {
   // 1. 해당 컬렉션에 사진이 이미 포함되어 있는지 확인
   const existingEntry = await db.collectionOnPhotos.findFirst({
@@ -98,4 +85,33 @@ export async function createNewCollection(
       (collectionPhoto) => collectionPhoto.photo
     ),
   };
+}
+
+export async function getCollectionById(collectionId: string) {
+  try {
+    const collection = await db.collection.findUnique({
+      where: {
+        id: collectionId,
+      },
+      include: {
+        photos: {
+          include: {
+            photo: true, // 사진 정보도 포함하여 가져옴
+          },
+        },
+        user: true, // 컬렉션의 사용자 정보도 포함
+      },
+    });
+
+    if (!collection) return null;
+    return {
+      ...collection,
+      photos: collection.photos.map(
+        (collectiononPhoto) => collectiononPhoto.photo
+      ),
+    };
+  } catch (error) {
+    console.error('Error fetching collection by id:', error);
+    return null;
+  }
 }
