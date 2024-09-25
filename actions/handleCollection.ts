@@ -1,6 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { ImageType } from '@/types';
 
 export async function getAllCollectionsByUser(userId: string) {
   const collections = await db.collection.findMany({
@@ -94,24 +95,35 @@ export async function getCollectionById(collectionId: string) {
         id: collectionId,
       },
       include: {
-        photos: {
-          include: {
-            photo: true, // 사진 정보도 포함하여 가져옴
-          },
-        },
         user: true, // 컬렉션의 사용자 정보도 포함
       },
     });
 
     if (!collection) return null;
-    return {
-      ...collection,
-      photos: collection.photos.map(
-        (collectiononPhoto) => collectiononPhoto.photo
-      ),
-    };
+    return collection;
   } catch (error) {
     console.error('Error fetching collection by id:', error);
     return null;
   }
+}
+
+export async function getCollectionPhotos(
+  collectionId: string,
+  skip: number = 0,
+  take: number = 10
+) {
+  const photos = await db.collectionOnPhotos.findMany({
+    where: { collectionId },
+    include: {
+      photo: true,
+    },
+    skip,
+    take,
+  });
+
+  const transformedPhotos = photos.map(
+    (collectionOnPhoto) => collectionOnPhoto.photo
+  );
+
+  return transformedPhotos as ImageType[];
 }

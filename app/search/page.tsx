@@ -1,13 +1,13 @@
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { auth } from '@/auth';
-import Search from '@/components/search/search';
+import BottomNavigation from '@/components/home/bottom_nav/nav';
+import PhotoGrid from '@/components/ui/photoGrid';
 import { fetchBySearch } from '@/data/photo';
 import { keywords } from '@/lib/constance';
 import { CollectionWithPhotos, ImageType } from '@/types';
 
 export default async function Page({
   searchParams,
-  children,
 }: {
   searchParams?: { query?: string };
   children: React.ReactNode;
@@ -27,16 +27,17 @@ export default async function Page({
   const { ko, desc } = keyword;
 
   return (
-    <>
-      <Search
-        title={ko}
-        desc={desc}
-        query={query}
-        initialData={images}
-        session={session}
+    <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>
+      <h1 className='font-bold text-5xl my-5'>{ko}</h1>
+      <p className='text-2xl mb-5'>{desc}</p>
+      <PhotoGrid
         collections={collections}
+        fetchFunction={fetchBySearch}
+        initialData={images}
+        query={query}
+        session={session}
       />
-      {children}
-    </>
+      <BottomNavigation session={session} />
+    </div>
   );
 }

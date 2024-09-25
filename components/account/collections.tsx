@@ -13,7 +13,7 @@ export default function UserCollections({
   collections: CollectionWithPhotos[];
 }) {
   return (
-    <div className='flex flex-wrap flex-col sm:flex-row gap-5 justify-around rounded-md mx-auto w-[95%]'>
+    <div className='flex flex-wrap flex-col sm:flex-row gap-5 justify-around rounded-md mx-auto '>
       {collections.map((collection) => {
         const latest3Items: (Photo | null)[] = collection.photos.slice(-3);
         if (latest3Items.length < 3) {

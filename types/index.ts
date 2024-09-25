@@ -1,6 +1,6 @@
 import { Collection, Photo } from '@prisma/client';
 
-type PhotoJsonField = Record<string, string>;
+export type PhotoJsonField = Record<string, string>;
 
 export type ImageType = Omit<Photo, 'urls' | 'links'> & {
   urls: PhotoJsonField;
