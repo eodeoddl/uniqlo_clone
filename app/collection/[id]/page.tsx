@@ -4,7 +4,13 @@ import {
   getCollectionPhotos,
 } from '@/actions/handleCollection';
 import { auth } from '@/auth';
+import CollectionEditModal from '@/components/collections/collectionEditModal';
 import BottomNavigation from '@/components/home/bottom_nav/nav';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import PhotoGrid from '@/components/ui/photoGrid';
 import { ImageType } from '@/types';
 import { CircleUserRound } from 'lucide-react';
@@ -30,7 +36,23 @@ export default async function Page({ params }: { params: { id: string } }) {
           {currentCollection.user.name}
         </span>
       </div>
-      <span className='text-xl'>{collectionPhotos.length}개의 이미지</span>
+      <div className='flex justify-between mb-5 text-xl'>
+        <span>{collectionPhotos.length}개의 이미지</span>
+        {session?.user.id === currentCollection.user.id && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button>컬렉션 편집</button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className='h-screen w-full sm:max-w-[700px] sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-5'>
+              <CollectionEditModal
+                title={currentCollection.title}
+                description={currentCollection.description || ''}
+                collectionId={currentCollection.id}
+              />
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
       <PhotoGrid
         query={params.id}
         collections={userCollections}

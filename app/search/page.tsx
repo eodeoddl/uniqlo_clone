@@ -36,6 +36,7 @@ export default async function Page({
         initialData={images}
         query={query}
         session={session}
+        useRouterModal
       />
       <BottomNavigation session={session} />
     </div>

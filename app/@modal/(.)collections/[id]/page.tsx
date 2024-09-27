@@ -1,5 +1,3 @@
-import { auth } from '@/auth';
-import CollectionsModal from '@/components/collections/collections-modal';
 import { AlertDialog, AlertDialogContent } from '@/components/ui/alert-dialog';
 import { db } from '@/lib/db';
 import { ImageType } from '@/types';
@@ -9,8 +7,6 @@ export default async function Modal({ params }: { params: { id: string } }) {
   const photo = (await db.photo.findUnique({
     where: { id: params.id },
   })) as ImageType;
-
-  const session = auth();
 
   return (
     <AlertDialog defaultOpen>

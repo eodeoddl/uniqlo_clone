@@ -15,8 +15,11 @@ const AlertDialogPortal = AlertDialogPrimitive.Portal;
 
 const AlertDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay> & {
+    useRouterModal?: boolean;
+    onClose ?: () => void
+  }
+>(({ className, useRouterModal, ...props }, ref) => (
   <AlertDialogPrimitive.Overlay
     className={cn(
       'fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -37,7 +40,7 @@ const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   AlertDialogContentProps
 >(({ className, useRouterModal, ...props }, ref) => {
-  const router = useRouter();
+  const router = useRouter()
   const modalRoot =
     typeof window !== 'undefined'
       ? document.getElementById('modal-root')
@@ -47,6 +50,7 @@ const AlertDialogContent = React.forwardRef<
   return (
     <AlertDialogPortal container={modalRoot}>
       <AlertDialogOverlay
+        useRouterModal={useRouterModal}
         onClick={useRouterModal ? () => router.back() : undefined}
       />
       <AlertDialogPrimitive.Content
@@ -137,6 +141,7 @@ const AlertDialogCancel = React.forwardRef<
   return (
     <AlertDialogPrimitive.Cancel
       ref={ref}
+      className={className}
       // className={cn(
       //   buttonVariants({ variant: 'outline' }),
       //   'mt-2 sm:mt-0',

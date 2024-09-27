@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { Download, Heart, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   cn,
   calculateColumns,
@@ -14,11 +14,11 @@ import {
 import clickLike from '@/actions/handleLike';
 import useStateManager from '@/lib/useStateManager';
 import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
-import CollectionsModal from '../collections/collections-modal';
+import CollectionCreateModal from '../collections/collectionCreateModal';
 import { ImageType, CollectionWithPhotos } from '@/types';
 
 interface PhotoGridProps {
-  query: string;
+  query: string | string[];
   initialData: ImageType[];
   session: any;
   collections: CollectionWithPhotos[];
@@ -44,7 +44,6 @@ export default function PhotoGrid({
   const skipRef = useRef(1);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
   const router = useRouter();
 
   // 무한 스크롤 데이터 페칭
@@ -154,7 +153,7 @@ export default function PhotoGrid({
                 className='relative group cursor-zoom-in rounded-lg overflow-hidden'
                 style={{ aspectRatio: `${item.width} / ${item.height}` }}
               >
-                <Link href={`${pathname}/${item.id}`}>
+                <Link href={`/search/${item.id}`}>
                   <Image
                     src={item.urls.regular}
                     fill
@@ -217,7 +216,7 @@ export default function PhotoGrid({
       <div ref={loader}></div>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-0'>
-          <CollectionsModal
+          <CollectionCreateModal
             session={session}
             selectedPhoto={selectedPhoto}
             collections={collections}
@@ -236,7 +235,7 @@ interface ButtonProps {
   className?: string;
 }
 
-function DownloadButton(props: ButtonProps) {
+export function DownloadButton(props: ButtonProps) {
   const { downloadUrl, filename, children, className } = props;
   const onClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

@@ -1,10 +1,10 @@
-import DownloadButton from '@/components/search/downloadButton';
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
+import { DownloadButton } from '@/components/ui/photoGrid';
 import {
   Popover,
   PopoverContent,
@@ -18,7 +18,6 @@ import Image from 'next/image';
 
 export default async function Modal({ params }: { params: { id: string } }) {
   const photo = (await fetchById(params.id)) as ImageType;
-
   return (
     <AlertDialog defaultOpen>
       <AlertDialogContent useRouterModal className='w-full sm:w-10/12'>
@@ -80,7 +79,10 @@ export default async function Modal({ params }: { params: { id: string } }) {
             style={{ objectFit: 'contain' }}
           />
         </AlertDialogDescription>
-        <AlertDialogCancel className='mx-auto border-0 w-fit hover:bg-transparent'>
+        <AlertDialogCancel
+          className='mx-auto border-0 w-fit hover:bg-transparent'
+          useRouterModal
+        >
           <X size='36' />
         </AlertDialogCancel>
       </AlertDialogContent>

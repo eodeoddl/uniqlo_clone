@@ -127,3 +127,34 @@ export async function getCollectionPhotos(
 
   return transformedPhotos as ImageType[];
 }
+
+export async function editCollection(
+  collectionId: string,
+  title: string,
+  description?: string
+) {
+  await db.collection.update({
+    where: {
+      id: collectionId,
+    },
+    data: {
+      title,
+      description,
+    },
+  });
+}
+
+export async function deleteCollection(collectionId: string) {
+  await db.collectionOnPhotos.deleteMany({
+    where: {
+      collectionId: collectionId,
+    },
+  });
+
+  await db.collection.delete({
+    where: {
+      id: collectionId,
+    },
+  });
+  console.log('collection delete success');
+}

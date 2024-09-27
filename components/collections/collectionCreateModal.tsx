@@ -1,11 +1,7 @@
 'use client';
 
 import { Check, Minus, Plus, X } from 'lucide-react';
-import {
-  AlertDialogCancel,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from '../ui/alert-dialog';
+import { AlertDialogDescription, AlertDialogTitle } from '../ui/alert-dialog';
 import { useState } from 'react';
 import {
   Form,
@@ -26,6 +22,7 @@ import { createNewCollection } from '@/actions/handleCollection';
 import { CollectionWithPhotos } from '@/types';
 import { useDebounce } from '@/lib/useDebounce';
 import { useRouter } from 'next/navigation';
+import { AlertDialogCancel } from '@radix-ui/react-alert-dialog';
 
 const formSchema = z.object({
   title: z.string({
@@ -35,7 +32,7 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-export default function CollectionsModal({
+export default function CollectionCreateModal({
   selectedPhoto,
   session,
   collections,
@@ -61,11 +58,6 @@ export default function CollectionsModal({
       title,
       description
     );
-
-    await fetch('/api/revalidate', {
-      method: 'POST',
-      body: JSON.stringify({ path: '/search' }),
-    });
 
     setUserCollections((prevCollections) => [
       ...prevCollections,
@@ -193,8 +185,8 @@ export default function CollectionsModal({
             {/* 컬렉션 리스트 & 컬렉션 생성 UI */}
             <AlertDialogTitle className='flex justify-between w-full sm:font-bold sm:text-3xl'>
               <span>컬렉션 생성</span>
-              <AlertDialogCancel>
-                <X onClick={onClose} className='cursor-pointer inline-block' />
+              <AlertDialogCancel onClick={onClose}>
+                <X className='cursor-pointer inline-block' />
               </AlertDialogCancel>
             </AlertDialogTitle>
             <AlertDialogDescription className='hidden'>

@@ -7,32 +7,23 @@ export default async function Layout({ tabs }: { tabs: React.ReactNode }) {
       <TabGroup
         basePath='/account/profile'
         tabItems={[
-          { icons: <Images />, text: '사진', path: '' },
-          { icons: <Folders />, text: '컬렉션', path: 'collections' },
-          { icons: <Heart />, text: '좋아요', path: 'likes' },
+          {
+            icon: <Images />,
+            text: '사진',
+            path: '',
+          },
+          {
+            icon: <Folders />,
+            text: '컬렉션',
+            path: 'collections',
+          },
+          {
+            icon: <Heart />,
+            text: '좋아요',
+            path: 'likes',
+          },
         ]}
       />
-      {/* <Link
-        href='/account/profile'
-        className='text-2xl font-semibold inline-flex items-center gap-2 mx-2'
-      >
-        <Images />
-        사진
-      </Link>
-      <Link
-        href='/account/profile/collections'
-        className='text-2xl font-semibold inline-flex items-center gap-2 mx-2'
-      >
-        <Folders />
-        컬렉션
-      </Link>
-      <Link
-        href='/account/profile/likes'
-        className='text-2xl font-semibold inline-flex items-center gap-2 mx-2'
-      >
-        <Heart />
-        좋아요
-      </Link> */}
       {tabs}
     </div>
   );
