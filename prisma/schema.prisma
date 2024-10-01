@@ -28,8 +28,8 @@ model User {
   password      String?
   role          UserRole  @default(USER)
   accounts      Account[]
-  likedPhotos   String[]  @default([])
   collections   Collection[]
+  userLikes     UserPhotoLikes[]
 }
 
 model Account {
@@ -77,7 +77,7 @@ model Photo {
   tags_preview      TagPreview[]
   topics            TopicOnPhotos[]
   collections       CollectionOnPhotos[]
-
+  userLikes         UserPhotoLikes[]
 }
 
 model Tag {
@@ -137,4 +137,12 @@ model CollectionOnPhotos {
   @@unique([photoId, collectionId])
 }
 
+model UserPhotoLikes {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  photoId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, photoId])
+}

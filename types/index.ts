@@ -15,3 +15,9 @@ export type ImageGroupType = {
 export type CollectionWithPhotos = Collection & {
   photos: Photo[];
 };
+
+export type PhotoGridFetchFunction<T = any> = (
+  query: T,
+  skip?: number,
+  take?: number
+) => Promise<ImageType[]>;

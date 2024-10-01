@@ -107,6 +107,8 @@ export async function getCollectionById(collectionId: string) {
   }
 }
 
+
+// PhotoGrid fetchFunction
 export async function getCollectionPhotos(
   collectionId: string,
   skip: number = 0,

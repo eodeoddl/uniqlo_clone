@@ -4,7 +4,7 @@ import BottomNavigation from '@/components/home/bottom_nav/nav';
 import PhotoGrid from '@/components/ui/photoGrid';
 import { fetchBySearch } from '@/data/photo';
 import { keywords } from '@/lib/constance';
-import { CollectionWithPhotos, ImageType } from '@/types';
+import { CollectionWithPhotos } from '@/types';
 
 export default async function Page({
   searchParams,
@@ -13,12 +13,17 @@ export default async function Page({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  const query = searchParams?.query || '';
-  const keyword = keywords.find(({ en }) => query === en);
-  const images = (await fetchBySearch(query)) as ImageType[];
+  const slug = searchParams?.query || '';
+  const keyword = keywords.find(({ en }) => slug === en);
   const collections: CollectionWithPhotos[] = await getAllCollectionsByUser(
     session?.user.id!
   );
+
+  const query = {
+    userId: session?.user.id!,
+    slug,
+  };
+  const initialData = await fetchBySearch(query);
 
   if (!keyword) {
     return <div>Keyword not found</div>;
@@ -33,10 +38,9 @@ export default async function Page({
       <PhotoGrid
         collections={collections}
         fetchFunction={fetchBySearch}
-        initialData={images}
+        initialData={initialData}
         query={query}
         session={session}
-        useRouterModal
       />
       <BottomNavigation session={session} />
     </div>

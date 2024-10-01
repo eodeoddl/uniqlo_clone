@@ -1,4 +1,5 @@
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
+import { getLikedByUserPhotos } from '@/actions/handleLike';
 import { auth } from '@/auth';
 import PhotoGrid from '@/components/ui/photoGrid';
 
@@ -7,13 +8,16 @@ export default async function Page() {
 
   if (!session) return null;
 
-  console.log('like page session ', session);
+  const collections = await getAllCollectionsByUser(session.user.id!);
+  const initialData = await getLikedByUserPhotos(session.user.id!);
 
-  const collections = await getAllCollectionsByUser(session?.user.id!);
   return (
-    <div>
-      likes Page
-      {/* <PhotoGrid collections={collections} initialData={} query={session.} session={} fetchFunction={} /> */}
-    </div>
+    <PhotoGrid
+      collections={collections}
+      initialData={initialData}
+      query={session.user.id!}
+      session={session}
+      fetchFunction={getLikedByUserPhotos}
+    />
   );
 }

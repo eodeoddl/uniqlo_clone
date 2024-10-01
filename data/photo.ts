@@ -1,9 +1,15 @@
 'use server';
 import { db } from '@/lib/db';
-import { ImageType } from '@/types';
+import { ImageType, PhotoGridFetchFunction } from '@/types';
 
-export const fetchBySearch = async (
-  query: string,
+export const fetchBySearch: PhotoGridFetchFunction<{
+  userId: string;
+  slug: string;
+}> = async (
+  query: {
+    userId: string;
+    slug: string;
+  },
   skip: number = 0,
   take: number = 10
 ) => {
@@ -12,8 +18,15 @@ export const fetchBySearch = async (
       topics: {
         some: {
           topic: {
-            slug: query,
+            slug: query.slug,
           },
+        },
+      },
+    },
+    include: {
+      userLikes: {
+        where: {
+          userId: query.userId,
         },
       },
     },
@@ -21,13 +34,12 @@ export const fetchBySearch = async (
     take,
   });
 
-  // const transformedRes: ImageType[] = res.map((photo) => ({
-  //   ...photo,
-  //   urls: photo.urls as Record<string, string>, // 타입 변환
-  //   links: photo.links as Record<string, string>, // 타입 변환
-  // }));
+  console.log('skip take => ', skip, take);
 
-  return res as ImageType[];
+  return res.map((photo) => ({
+    ...photo,
+    liked_by_user: photo.userLikes.length > 0,
+  })) as ImageType[];
 };
 
 export const fetchById = async (id: string) => {

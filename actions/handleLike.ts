@@ -1,47 +1,62 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { ImageType, PhotoGridFetchFunction } from '@/types';
+import { revalidatePath } from 'next/cache';
 
-export default async function clickLike(photoId: string, userId: string) {
-  const photo = await db.photo.findUnique({
-    where: { id: photoId },
-    select: { liked_by_user: true, likes: true },
-  });
-
-  if (!photo) {
-    throw new Error('Photo not found');
-  }
-
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    select: { likedPhotos: true },
-  });
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // 좋아요 상태 토글
-  const newLikedByUser = !photo.liked_by_user;
-  const newLikes = newLikedByUser ? photo.likes + 1 : photo.likes - 1;
-
-  // likedPhotos 배열
-  const updatedLikedPhotos = newLikedByUser
-    ? [...user.likedPhotos, photoId]
-    : user.likedPhotos.filter((id) => id !== photoId);
-
-  // 데이터베이스 업데이트
-  await db.photo.update({
-    where: { id: photoId },
-    data: {
-      liked_by_user: newLikedByUser,
-      likes: newLikes,
+export const toggleLike = async (userId: string, photoId: string) => {
+  const existingLike = await db.userPhotoLikes.findUnique({
+    where: {
+      userId_photoId: {
+        userId: userId,
+        photoId: photoId,
+      },
     },
-    select: { id: true },
   });
 
-  await db.user.update({
-    where: { id: userId },
-    data: { likedPhotos: updatedLikedPhotos },
+  if (existingLike) {
+    // 이미 좋아요한 경우 -> 좋아요 취소
+    await db.userPhotoLikes.delete({
+      where: {
+        userId_photoId: {
+          userId: userId,
+          photoId: photoId,
+        },
+      },
+    });
+  } else {
+    // 좋아요하지 않은 경우 -> 좋아요 추가
+    await db.userPhotoLikes.create({
+      data: {
+        userId: userId,
+        photoId: photoId,
+      },
+    });
+  }
+
+  revalidatePath('/account/profile/likes');
+};
+
+export const getLikedByUserPhotos: PhotoGridFetchFunction<string> = async (
+  userId: string,
+  skip = 0,
+  take = 10
+) => {
+  const photos = await db.userPhotoLikes.findMany({
+    where: {
+      userId,
+    },
+    select: {
+      photo: true,
+    },
+    skip,
+    take,
   });
-}
+
+  const likedPhotos = photos.map((photo) => ({
+    ...photo.photo,
+    liked_by_user: true,
+  }));
+
+  return likedPhotos as ImageType[];
+};

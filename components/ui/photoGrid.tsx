@@ -11,22 +11,22 @@ import {
   findIndexOfShortestArray,
   splitDataIntoColumns,
 } from '@/lib/utils';
-import clickLike from '@/actions/handleLike';
+import { toggleLike } from '@/actions/handleLike';
 import useStateManager from '@/lib/useStateManager';
 import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
 import CollectionCreateModal from '../collections/collectionCreateModal';
-import { ImageType, CollectionWithPhotos } from '@/types';
+import {
+  ImageType,
+  CollectionWithPhotos,
+  PhotoGridFetchFunction,
+} from '@/types';
 
-interface PhotoGridProps {
-  query: string | string[];
+interface PhotoGridProps<T = any> {
+  query: T;
   initialData: ImageType[];
   session: any;
   collections: CollectionWithPhotos[];
-  fetchFunction: (
-    query: string,
-    skip: number,
-    limit: number
-  ) => Promise<ImageType[]>;
+  fetchFunction: PhotoGridFetchFunction<T>;
 }
 
 export default function PhotoGrid({
@@ -91,7 +91,12 @@ export default function PhotoGrid({
   useEffect(() => {
     if (!session) return;
     const idsToUpdate = getUpdateQueue();
-    idsToUpdate.forEach((id) => clickLike(id, session.user.id!));
+    const updateAndRevalidate = async () => {
+      await Promise.all(
+        idsToUpdate.map((id) => toggleLike(session.user.id!, id))
+      );
+    };
+    updateAndRevalidate();
   }, [getUpdateQueue, session, state]);
 
   // 초기 columns 상태 설정 및 initialData 변경 시 skipRef 초기화
@@ -142,6 +147,9 @@ export default function PhotoGrid({
     };
   }, [fetchMoreData, hasMore]);
 
+  console.log(columns);
+
+  // return null;
   return (
     <>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-10'>
@@ -149,7 +157,7 @@ export default function PhotoGrid({
           <div key={colIndex} className='flex flex-col gap-4'>
             {column.map((item) => (
               <div
-                key={item.id}
+                key={`${item.id}-${colIndex}`}
                 className='relative group cursor-zoom-in rounded-lg overflow-hidden'
                 style={{ aspectRatio: `${item.width} / ${item.height}` }}
               >
