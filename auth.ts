@@ -57,7 +57,6 @@ export const {
           role: token.role,
           token: token.token,
           refreshToken: token.refreshToken,
-          likedPhotos: token.likedPhotos,
         },
       };
     },
@@ -66,7 +65,6 @@ export const {
         const user = await getUserById(token.sub);
         if (user) {
           token.role = user.role;
-          token.likedPhotos = user.likedPhotos;
           return token;
         }
       }
