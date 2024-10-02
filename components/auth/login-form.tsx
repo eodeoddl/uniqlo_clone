@@ -15,7 +15,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { login } from '@/actions/login';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import Header from './header';
@@ -23,7 +23,7 @@ import BackButton from './back-button';
 import Social from './social';
 import Link from 'next/link';
 
-export default function LoginForm() {
+export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -31,6 +31,7 @@ export default function LoginForm() {
       password: '',
     },
   });
+  const { isSubmitting } = form.formState;
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectionWithError =
@@ -38,19 +39,21 @@ export default function LoginForm() {
       ? '다른 로그인 제공자에서 사용되는 이메일 링크입니다.'
       : '';
 
-  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError('');
-
-    startTransition(async () => {
+    try {
       const res = await login(values);
-      if (res?.error) setError(res?.error);
-      // else router.back();
-    });
-    console.log('end transition => ', error, isPending);
-    if (!isPending && !error) router.back();
+      if (res?.error) {
+        setError(res.error);
+      } else {
+        router.replace(redirectTo);
+        router.refresh();
+      }
+    } catch (error) {
+      setError('로그인 중 문제가 발생했습니다.');
+    }
   };
 
   return (
@@ -71,7 +74,7 @@ export default function LoginForm() {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={isPending}
+                        disabled={isSubmitting}
                         placeholder='Email을 입력하세요'
                         type='email'
                       />
@@ -89,7 +92,7 @@ export default function LoginForm() {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={isPending}
+                        disabled={isSubmitting}
                         placeholder='비밀번호를 입력하세요'
                         type='password'
                       />
@@ -100,16 +103,25 @@ export default function LoginForm() {
               />
             </div>
             <FormError message={error || redirectionWithError} />
-            <Button type='submit' disabled={isPending} className='w-full'>
+            <Button type='submit' disabled={isSubmitting} className='w-full'>
               로그인
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className='flex-col flex-wrap gap-2'>
-        <Social />
-        <BackButton href='/auth/resister' label='계정이 없으신가요?' />
-        <Button size='sm' variant='link' className='font-normal'>
+        <Social isSubmitting={isSubmitting} />
+        <BackButton
+          href='/auth/resister'
+          label='계정이 없으신가요?'
+          disabled={isSubmitting}
+        />
+        <Button
+          size='sm'
+          variant='link'
+          className='font-normal'
+          disabled={isSubmitting}
+        >
           <Link href='/account/passwordReset'>비밀번호를 잊어버리셨나요?</Link>
         </Button>
       </CardFooter>

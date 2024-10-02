@@ -8,7 +8,7 @@ import GoogleIcon from '../ui/google.svg';
 import { Button } from '../ui/button';
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 
-export default function Social() {
+export default function Social({ isSubmitting }: { isSubmitting: boolean }) {
   const onClick = (provider: 'github' | 'google') => {
     signIn(provider, { callbackUrl: DEFAULT_LOGIN_REDIRECT });
   };
@@ -19,6 +19,7 @@ export default function Social() {
         variant='outline'
         className='space-x-2'
         onClick={() => onClick('github')}
+        disabled={isSubmitting}
       >
         <Image src={GitHubIcon} width={24} height={24} alt='github-logo' />
         <span>GitHub 계정으로 로그인</span>
@@ -28,6 +29,7 @@ export default function Social() {
         variant='outline'
         className='space-x-2'
         onClick={() => onClick('google')}
+        disabled={isSubmitting}
       >
         <Image src={GoogleIcon} width={24} height={24} alt='Google-logo' />
         <span>Google 계정으로 로그인</span>
