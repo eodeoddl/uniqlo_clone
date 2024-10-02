@@ -16,7 +16,6 @@ import { Button } from '../ui/button';
 import { ResetPasswordSchema } from '@/schemas';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTransition } from 'react';
 import { sendVerificationEmail } from '@/actions/editPassword';
 import { isKeyOf } from '@/lib/utils';
 
@@ -25,22 +24,19 @@ export default function PasswordResetForm() {
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: { email: '' },
   });
+  const { isSubmitting } = form.formState;
 
-  const [isPending, startTransition] = useTransition();
-
-  const onSubmit = (values: z.infer<typeof ResetPasswordSchema>) => {
-    startTransition(async () => {
-      try {
-        const { field, message } = await sendVerificationEmail(values);
-        if (isKeyOf(field, values)) form.setError(field, { message });
-      } catch (error) {
-        if (error instanceof Error) {
-          form.setError('root', {
-            message: '알수 없는 오류 입니다. 잠시후에 다시 시도해 주세요.',
-          });
-        }
+  const onSubmit = async (values: z.infer<typeof ResetPasswordSchema>) => {
+    try {
+      const { field, message } = await sendVerificationEmail(values);
+      if (isKeyOf(field, values)) form.setError(field, { message });
+    } catch (error) {
+      if (error instanceof Error) {
+        form.setError('root', {
+          message: '알수 없는 오류 입니다. 잠시후에 다시 시도해 주세요.',
+        });
       }
-    });
+    }
   };
 
   return (
@@ -68,7 +64,7 @@ export default function PasswordResetForm() {
                           {...field}
                           type='email'
                           placeholder='email'
-                          disabled={isPending}
+                          disabled={isSubmitting}
                         />
                       </FormControl>
                       <Button type='submit'>메일 전송</Button>
@@ -84,7 +80,11 @@ export default function PasswordResetForm() {
           </Form>
         </CardContent>
         <CardFooter className='justify-center'>
-          <BackButton href='/auth/login' label='뒤로가기' />
+          <BackButton
+            href='/auth/login'
+            label='뒤로가기'
+            disabled={isSubmitting}
+          />
         </CardFooter>
       </Card>
     </div>

@@ -17,7 +17,7 @@ export default function PasswordResetSuccess() {
           </p>
         </CardContent>
         <CardFooter className='justify-center'>
-          <BackButton href='/' label='홈으로' />
+          <BackButton href='/' label='홈으로' disabled={false} />
         </CardFooter>
       </Card>
     </div>
