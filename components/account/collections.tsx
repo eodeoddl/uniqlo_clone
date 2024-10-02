@@ -1,10 +1,9 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { CollectionWithPhotos } from '@/types';
+import { CollectionWithPhotos, ImageType } from '@/types';
 import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
-import { Photo } from '@prisma/client';
 import Link from 'next/link';
 
 export default function UserCollections({
@@ -15,7 +14,7 @@ export default function UserCollections({
   return (
     <div className='flex flex-wrap flex-col sm:flex-row gap-5 justify-around rounded-md mx-auto '>
       {collections.map((collection) => {
-        const latest3Items: (Photo | null)[] = collection.photos.slice(-3);
+        const latest3Items: (ImageType | null)[] = collection.photos.slice(-3);
         if (latest3Items.length < 3) {
           Array.from({ length: 3 - latest3Items.length }, () =>
             latest3Items.push(null)
@@ -37,7 +36,7 @@ export default function UserCollections({
                 >
                   {item ? (
                     <Image
-                      alt={item.alternative_slugs?.ko!}
+                      alt={item.alternative_slugs.ko}
                       src={item.urls.regular}
                       fill
                       style={{ objectFit: 'cover' }}

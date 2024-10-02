@@ -2,9 +2,10 @@ import { Collection, Photo } from '@prisma/client';
 
 export type PhotoJsonField = Record<string, string>;
 
-export type ImageType = Omit<Photo, 'urls' | 'links'> & {
+export type ImageType = Omit<Photo, 'urls' | 'links' | 'alternative_slugs'> & {
   urls: PhotoJsonField;
   links: PhotoJsonField;
+  alternative_slugs: PhotoJsonField;
 };
 
 export type ImageGroupType = {
@@ -13,7 +14,7 @@ export type ImageGroupType = {
 };
 
 export type CollectionWithPhotos = Collection & {
-  photos: Photo[];
+  photos: ImageType[];
 };
 
 export type PhotoGridFetchFunction<T = any> = (
