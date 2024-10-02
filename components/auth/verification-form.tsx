@@ -1,6 +1,6 @@
 'use client';
 import CardWrapper from './card-wrapper';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
@@ -10,7 +10,6 @@ import { resister } from '@/actions/resister';
 
 export default function VerificationForm() {
   const [error, setError] = useState<string>();
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<{ token: string }>({
     defaultValues: {
@@ -18,14 +17,14 @@ export default function VerificationForm() {
     },
   });
 
-  const onSubmit = ({ token }: { token: string }) => {
-    startTransition(async () => {
-      try {
-        await resister(token);
-      } catch (error) {
-        if (error instanceof Error) setError(error?.message);
-      }
-    });
+  const { isSubmitting } = form.formState;
+
+  const onSubmit = async ({ token }: { token: string }) => {
+    try {
+      await resister(token);
+    } catch (error) {
+      if (error instanceof Error) setError(error?.message);
+    }
   };
 
   return (
@@ -33,6 +32,7 @@ export default function VerificationForm() {
       headerLabel='이메일로 인증코드가 발송되었습니다.'
       backButtonHref='/auth/login'
       backButtonLabel='로그인 페이지로 돌아가기'
+      isSubmitting={isSubmitting}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
@@ -44,11 +44,11 @@ export default function VerificationForm() {
                 <FormControl>
                   <Input
                     placeholder='인증코드'
-                    disabled={isPending}
+                    disabled={isSubmitting}
                     {...field}
                   />
                 </FormControl>
-                <Button type='submit' disabled={isPending}>
+                <Button type='submit' disabled={isSubmitting}>
                   입력
                 </Button>
               </FormItem>
