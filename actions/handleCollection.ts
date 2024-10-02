@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { ImageType } from '@/types';
+import { CollectionWithPhotos, ImageType } from '@/types';
 
 export async function getAllCollectionsByUser(userId: string) {
   const collections = await db.collection.findMany({
@@ -21,7 +21,7 @@ export async function getAllCollectionsByUser(userId: string) {
   return collections.map((collection) => ({
     ...collection,
     photos: collection.photos.map((collectionPhoto) => collectionPhoto.photo), // CollectionOnPhotos[]에서 Photo[]로 변환
-  }));
+  })) as CollectionWithPhotos[];
 }
 
 export async function toggleCollection(collectionId: string, photoId: string) {
@@ -106,7 +106,6 @@ export async function getCollectionById(collectionId: string) {
     return null;
   }
 }
-
 
 // PhotoGrid fetchFunction
 export async function getCollectionPhotos(
