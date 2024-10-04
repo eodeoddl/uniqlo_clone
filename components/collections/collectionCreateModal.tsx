@@ -23,6 +23,7 @@ import { CollectionWithPhotos } from '@/types';
 import { useDebounce } from '@/lib/useDebounce';
 import { useRouter } from 'next/navigation';
 import { AlertDialogCancel } from '@radix-ui/react-alert-dialog';
+import { Session } from 'next-auth';
 
 const formSchema = z.object({
   title: z.string({
@@ -39,7 +40,7 @@ export default function CollectionCreateModal({
   onClose,
 }: {
   selectedPhoto: any;
-  session: any;
+  session: Session;
   collections: CollectionWithPhotos[];
   onClose: () => void;
 }) {
@@ -82,19 +83,19 @@ export default function CollectionCreateModal({
           signal: abortController.signal, // AbortController로 요청 취소 가능하게 설정
         });
 
-        await fetch('/api/revalidate', {
-          method: 'POST',
-          body: JSON.stringify({ path: '/search' }),
-        });
+        // await fetch('/api/revalidate', {
+        //   method: 'POST',
+        //   body: JSON.stringify({ path: '/search' }),
+        // });
 
-        refresh();
+        // refresh();
       } catch (error) {
         console.error(error);
       }
     }
   );
 
-  const handleToggelCollection = (collectionId: string) => {
+  const handleToggelCollection = async (collectionId: string) => {
     setUserCollections((prevCollections) =>
       prevCollections.map((collection) => {
         if (collection.id === collectionId) {
@@ -110,7 +111,7 @@ export default function CollectionCreateModal({
         return collection;
       })
     );
-    updateCollectionOnServer(collectionId);
+    await updateCollectionOnServer(collectionId);
   };
 
   return (
@@ -199,41 +200,44 @@ export default function CollectionCreateModal({
               새 컬렉션 생성
               <Plus />
             </div>
-            {userCollections.map((collection) => (
-              <div
-                key={collection.id}
-                className='relative group flex justify-between min-h-20 items-center p-4 px-7 rounded-lg sm:text-2xl text-white cursor-pointer mt-8 overflow-hidden'
-                onClick={() => handleToggelCollection(collection.id)}
-              >
-                {/* 컬렉션 대표 이미지 */}
-                {collection.photos.at(-1)?.urls && (
-                  <Image
-                    alt={collection.id}
-                    src={collection.photos.at(-1)?.urls.regular}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                )}
-                {/* 반투명 오버레이 */}
-                <div className='absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none p-4'></div>
-                {/* 컬렉션 타이틀 */}
-                <div className='z-10'>
-                  <span className='text-xs block'>
-                    사진 {collection.photos.length}장
-                  </span>
-                  <span>{collection.title}</span>
+            {userCollections.map((collection) => {
+              const latestPhoto = collection.photos.at(-1);
+              return (
+                <div
+                  key={collection.id}
+                  className='relative group flex justify-between min-h-20 items-center p-4 px-7 rounded-lg sm:text-2xl text-white cursor-pointer mt-8 overflow-hidden'
+                  onClick={() => handleToggelCollection(collection.id)}
+                >
+                  {/* 컬렉션 대표 이미지 */}
+                  {latestPhoto && (
+                    <Image
+                      alt={collection.id}
+                      src={latestPhoto.urls.regular}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  )}
+                  {/* 반투명 오버레이 */}
+                  <div className='absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none p-4'></div>
+                  {/* 컬렉션 타이틀 */}
+                  <div className='z-10'>
+                    <span className='text-xs block'>
+                      사진 {collection.photos.length}장
+                    </span>
+                    <span>{collection.title}</span>
+                  </div>
+                  {/* 컬렉션 토글 아이콘 */}
+                  {isPhotoInCollection(collection) && (
+                    <Check className='group-hover:hidden z-10' />
+                  )}
+                  {isPhotoInCollection(collection) ? (
+                    <Minus className='hidden group-hover:block z-10' />
+                  ) : (
+                    <Plus className='hidden group-hover:block z-10' />
+                  )}
                 </div>
-                {/* 컬렉션 토글 아이콘 */}
-                {isPhotoInCollection(collection) && (
-                  <Check className='group-hover:hidden z-10' />
-                )}
-                {isPhotoInCollection(collection) ? (
-                  <Minus className='hidden group-hover:block z-10' />
-                ) : (
-                  <Plus className='hidden group-hover:block z-10' />
-                )}
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db';
 import { CollectionWithPhotos, ImageType } from '@/types';
+import { revalidatePath } from 'next/cache';
 
 export async function getAllCollectionsByUser(userId: string) {
   const collections = await db.collection.findMany({
@@ -51,7 +52,7 @@ export async function toggleCollection(collectionId: string, photoId: string) {
     },
   });
 
-  return { action: 'added', collectionId, photoId };
+  revalidatePath('/search');
 }
 
 export async function createNewCollection(
@@ -85,7 +86,7 @@ export async function createNewCollection(
     photos: newCollection.photos.map(
       (collectionPhoto) => collectionPhoto.photo
     ),
-  };
+  } as CollectionWithPhotos;
 }
 
 export async function getCollectionById(collectionId: string) {
