@@ -87,10 +87,11 @@ export const {
 
         user = await getUserByEmail(email);
 
-        if (!user || !user.password)
+        if (!user || !user.password) {
           throw new Error(
             '회원가입이 필요한 이메일 입니다. 회원가입을 진행해 주세요.'
           );
+        }
 
         if (password) {
           const passwordMatch = await bcrypt.compare(password, user.password);

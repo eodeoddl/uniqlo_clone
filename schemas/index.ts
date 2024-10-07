@@ -13,7 +13,6 @@ export const LoginSchema = z
       })
       .optional(),
     token: z.string().optional(),
-    // redirectTo: z.string(),
   })
   .refine(
     ({ email, password, token }) => {

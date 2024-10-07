@@ -12,6 +12,7 @@ export default async function Modal() {
   const redirectTo = referer
     ? new URL(referer).pathname + new URL(referer).search
     : '/';
+
   return (
     <AlertDialog defaultOpen>
       <AlertDialogContent useRouterModal className='w-fit p-0'>

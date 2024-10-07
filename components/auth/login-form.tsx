@@ -44,22 +44,24 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError('');
     try {
-      const res = await login(values);
-      if (res?.error) {
-        setError(res.error);
-      } else {
-        router.replace(redirectTo);
-        router.refresh();
-      }
+      await login(values);
+      router.replace(redirectTo);
+      router.refresh();
     } catch (error) {
-      setError('로그인 중 문제가 발생했습니다.');
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(
+          '로그인 중 알 수 없는 문제가 발생했습니다. 다시 시도해 주세요.'
+        );
+      }
     }
   };
 
   return (
-    <Card className='w-10/12 sm:w-fit sm:shadow-md'>
+    <Card className='w-full sm:shadow-md'>
       <CardHeader>
-        <Header label='안녕하세요?' />
+        <Header label='로그인' />
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -122,7 +124,12 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
           className='font-normal'
           disabled={isSubmitting}
         >
-          <Link href='/account/passwordReset'>비밀번호를 잊어버리셨나요?</Link>
+          <Link
+            // href='/account/passwordReset'
+            href='/auth/cc'
+          >
+            비밀번호를 잊어버리셨나요?
+          </Link>
         </Button>
       </CardFooter>
     </Card>

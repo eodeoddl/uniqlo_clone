@@ -6,12 +6,20 @@ interface BackButtonProps {
   href: string;
   label: string;
   disabled: boolean;
+  replace?: boolean;
 }
 
-export default function BackButton({ href, label, disabled }: BackButtonProps) {
+export default function BackButton({
+  href,
+  label,
+  disabled,
+  replace,
+}: BackButtonProps) {
   return (
     <Button variant='link' className='font-normal' disabled={disabled}>
-      <Link href={href}>{label}</Link>
+      <Link href={href} replace={replace}>
+        {label}
+      </Link>
     </Button>
   );
 }
