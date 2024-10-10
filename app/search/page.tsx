@@ -10,7 +10,6 @@ export default async function Page({
   searchParams,
 }: {
   searchParams?: { query?: string };
-  // children: React.ReactNode;
 }) {
   const session = await auth();
   const slug = searchParams?.query || '';

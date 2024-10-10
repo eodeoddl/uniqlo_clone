@@ -34,8 +34,6 @@ export const fetchBySearch: PhotoGridFetchFunction<{
     take,
   });
 
-  console.log('skip take => ', skip, take);
-
   return res.map((photo) => ({
     ...photo,
     liked_by_user: photo.userLikes.length > 0,

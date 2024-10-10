@@ -1,4 +1,4 @@
-import BackButton from '../auth/back-button';
+import BackButton from './back-button';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 
 export default function PasswordResetSuccess() {

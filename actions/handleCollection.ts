@@ -51,8 +51,7 @@ export async function toggleCollection(collectionId: string, photoId: string) {
       photoId,
     },
   });
-
-  revalidatePath('/search');
+  revalidatePath(`/collection/${collectionId}`);
 }
 
 export async function createNewCollection(
@@ -100,11 +99,17 @@ export async function getCollectionById(collectionId: string) {
       },
     });
 
-    if (!collection) return null;
-    return collection;
+    const collectionOnPhotosCount = await db.collectionOnPhotos.count({
+      where: {
+        collectionId,
+      },
+    });
+
+    if (!collection) throw new Error('존재하지 않는 컬렉션 입니다.');
+    return { collection, collectionOnPhotosCount };
   } catch (error) {
     console.error('Error fetching collection by id:', error);
-    return null;
+    throw error;
   }
 }
 

@@ -12,12 +12,12 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import PhotoGrid from '@/components/ui/photoGrid';
-import { ImageType } from '@/types';
 import { CircleUserRound } from 'lucide-react';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
-  const currentCollection = await getCollectionById(params.id);
+  const { collection: currentCollection, collectionOnPhotosCount } =
+    await getCollectionById(params.id);
   const collectionPhotos = await getCollectionPhotos(params.id);
   const userCollections = await getAllCollectionsByUser(session?.user.id!); // 로그인 하지 않았을 경우를 생각해서 수정필요
 
@@ -37,7 +37,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         </span>
       </div>
       <div className='flex justify-between mb-5 text-xl'>
-        <span>{collectionPhotos.length}개의 이미지</span>
+        <span>{collectionOnPhotosCount}개의 이미지</span>
         {session?.user.id === currentCollection.user.id && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -58,7 +58,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         collections={userCollections}
         fetchFunction={getCollectionPhotos}
         session={session}
-        initialData={collectionPhotos as ImageType[]}
+        initialData={collectionPhotos}
       />
       <BottomNavigation session={session} />
     </div>

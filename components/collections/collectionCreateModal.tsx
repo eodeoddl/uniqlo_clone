@@ -46,6 +46,10 @@ export default function CollectionCreateModal({
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+    },
   });
   const [isCreating, setIsCreating] = useState(false);
   const [userCollections, setUserCollections] = useState(collections);
@@ -79,16 +83,13 @@ export default function CollectionCreateModal({
       try {
         await fetch('/api/collections/toggle', {
           method: 'POST',
-          body: JSON.stringify({ collectionId, photoId: selectedPhoto.id }),
+          body: JSON.stringify({
+            collectionId,
+            photoId: selectedPhoto.id,
+          }),
           signal: abortController.signal, // AbortController로 요청 취소 가능하게 설정
         });
-
-        // await fetch('/api/revalidate', {
-        //   method: 'POST',
-        //   body: JSON.stringify({ path: '/search' }),
-        // });
-
-        // refresh();
+        refresh();
       } catch (error) {
         console.error(error);
       }

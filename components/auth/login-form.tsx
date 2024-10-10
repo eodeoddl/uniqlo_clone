@@ -59,7 +59,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   };
 
   return (
-    <Card className='w-full sm:shadow-md'>
+    <Card className='w-full sm:w-fit sm:shadow-md'>
       <CardHeader>
         <Header label='로그인' />
       </CardHeader>
@@ -124,12 +124,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
           className='font-normal'
           disabled={isSubmitting}
         >
-          <Link
-            // href='/account/passwordReset'
-            href='/auth/cc'
-          >
-            비밀번호를 잊어버리셨나요?
-          </Link>
+          <Link href='/auth/passwordReset'>비밀번호를 잊어버리셨나요?</Link>
         </Button>
       </CardFooter>
     </Card>

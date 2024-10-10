@@ -40,6 +40,7 @@ export default function CardWrapper({
           label={backButtonLabel}
           disabled={isSubmitting}
         />
+        <BackButton href='/' disabled={isSubmitting} label={'홈으로'} / >
       </CardFooter>
     </Card>
   );

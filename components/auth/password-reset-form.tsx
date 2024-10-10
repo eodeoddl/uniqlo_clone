@@ -1,7 +1,7 @@
 'use client';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
-import BackButton from '../auth/back-button';
+import BackButton from './back-button';
 import {
   Form,
   FormControl,
@@ -80,11 +80,7 @@ export default function PasswordResetForm() {
           </Form>
         </CardContent>
         <CardFooter className='justify-center'>
-          <BackButton
-            href='/auth/login'
-            label='뒤로가기'
-            disabled={isSubmitting}
-          />
+          <BackButton href='/' label='홈으로가기' disabled={isSubmitting} />
         </CardFooter>
       </Card>
     </div>
