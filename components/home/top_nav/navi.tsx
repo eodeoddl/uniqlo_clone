@@ -17,7 +17,7 @@ export default function TopNavigation() {
           </Link>
         </nav>
         {/* right nav */}
-        <nav className='flex ml-auto gap-5 items-center'>
+        {/* <nav className='flex ml-auto gap-5 items-center'>
           <Link href='/cart'>
             <ShoppingCart
               className='drop-shadow-[1px_1px_1px_black]'
@@ -36,7 +36,7 @@ export default function TopNavigation() {
               absoluteStrokeWidth={true}
             />
           </Link>
-        </nav>
+        </nav> */}
         <CarouselNav />
       </header>
     </>
