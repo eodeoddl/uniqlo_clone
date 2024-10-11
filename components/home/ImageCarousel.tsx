@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Carousel,
   CarouselApi,
@@ -21,6 +21,7 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
   const pathname = usePathname();
   const [carouselApi, setCarouselpi] = useState<CarouselApi>();
   const currentTab = pathname.split('/')[1] || imageGroup[0].name;
+  const router = useRouter();
 
   useEffect(() => {
     const index = imageGroup.findIndex(({ name }) => name === currentTab);
@@ -29,8 +30,30 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
     }
   }, [carouselApi, currentTab, imageGroup]);
 
+  const handleTouchEnd = (direction: 'next' | 'prev') => {
+    const currentIndex = imageGroup.findIndex(
+      ({ name }) => name === currentTab
+    );
+    let newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+
+    // 경로 업데이트
+    if (newIndex >= 0 && newIndex < imageGroup.length) {
+      const newTab = imageGroup[newIndex].name;
+      router.push(`/${newTab}`);
+    }
+  };
+
   return (
-    <Carousel setApi={setCarouselpi}>
+    <Carousel
+      setApi={setCarouselpi}
+      onTouchEnd={(e) => {
+        if (e.changedTouches[0].clientX < window.innerWidth / 2) {
+          handleTouchEnd('next');
+        } else {
+          handleTouchEnd('prev');
+        }
+      }}
+    >
       <CarouselContent className='h-screen'>
         {imageGroup.map(({ name, images }) => (
           <CarouselItem
