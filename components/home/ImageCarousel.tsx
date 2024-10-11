@@ -43,11 +43,22 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
     }
   };
 
+  let startX = 0;
+  let startY = 0;
+
   return (
     <Carousel
       setApi={setCarouselpi}
-      opts={{ skipSnaps: false }}
+      onTouchStart={(e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }}
       onTouchEnd={(e) => {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const diffX = Math.abs(startX - endX);
+        const diffY = Math.abs(startY - endY);
+        if (diffY > diffX) return;
         if (e.changedTouches[0].clientX < window.innerWidth / 2) {
           handleTouchEnd('next');
         } else {
