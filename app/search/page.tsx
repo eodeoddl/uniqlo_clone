@@ -4,7 +4,6 @@ import BottomNavigation from '@/components/home/bottom_nav/nav';
 import PhotoGrid from '@/components/ui/photoGrid';
 import { fetchBySearch } from '@/data/photo';
 import { keywords } from '@/lib/constance';
-import { CollectionWithPhotos } from '@/types';
 
 export default async function Page({
   searchParams,
@@ -14,9 +13,7 @@ export default async function Page({
   const session = await auth();
   const slug = searchParams?.query || '';
   const keyword = keywords.find(({ en }) => slug === en);
-  const collections: CollectionWithPhotos[] = await getAllCollectionsByUser(
-    session?.user.id!
-  );
+  const collections = await getAllCollectionsByUser(session?.user.id!);
 
   const query = {
     userId: session?.user.id!,
