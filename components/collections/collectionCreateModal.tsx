@@ -185,7 +185,7 @@ export default function CollectionCreateModal({
         ) : (
           <>
             {/* 컬렉션 리스트 & 컬렉션 생성 UI */}
-            <AlertDialogTitle className='flex justify-between w-full sm:font-bold sm:text-3xl'>
+            <AlertDialogTitle className='flex justify-between w-full mt-10 sm:mt-0 sm:font-bold sm:text-3xl'>
               <span>컬렉션 생성</span>
               <AlertDialogCancel onClick={onClose}>
                 <X className='cursor-pointer inline-block' />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { AlertDialogContent, AlertDialogTitle } from '../ui/alert-dialog';
+import { AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -19,6 +19,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { deleteCollection, editCollection } from '@/actions/handleCollection';
 import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
 
 const formSchema = z.object({
   title: z.string({
@@ -63,9 +64,14 @@ export default function CollectionEditModal({
 
   return (
     <>
-      <AlertDialogTitle className='sm:font-bold sm:text-3xl'>
-        컬렉션 편집
-      </AlertDialogTitle>
+      <div className='flex justify-between items-center mt-10'>
+        <AlertDialogTitle className='sm:font-bold sm:text-3xl'>
+          컬렉션 편집
+        </AlertDialogTitle>
+        <AlertDialogTrigger>
+          <X />
+        </AlertDialogTrigger>
+      </div>
       <Form {...form}>
         <form className='mt-8 space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

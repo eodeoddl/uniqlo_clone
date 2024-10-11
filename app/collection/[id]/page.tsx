@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
             <AlertDialogTrigger asChild>
               <button>컬렉션 편집</button>
             </AlertDialogTrigger>
-            <AlertDialogContent className='h-screen w-full sm:max-w-[700px] sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-5'>
+            <AlertDialogContent className='block h-screen w-full sm:max-w-[700px] sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-5'>
               <CollectionEditModal
                 title={currentCollection.title}
                 description={currentCollection.description || ''}
