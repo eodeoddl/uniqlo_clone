@@ -46,6 +46,7 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
   return (
     <Carousel
       setApi={setCarouselpi}
+      opts={{ skipSnaps: false }}
       onTouchEnd={(e) => {
         if (e.changedTouches[0].clientX < window.innerWidth / 2) {
           handleTouchEnd('next');
