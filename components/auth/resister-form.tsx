@@ -17,7 +17,7 @@ import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
 import { useState } from 'react';
 import { sendResisterToken } from '@/actions/resister';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -30,14 +30,14 @@ export default function ResisterForm() {
     },
   });
   const { isSubmitting } = form.formState;
-
+  const { replace } = useRouter();
   const [error, setError] = useState<string | undefined>();
 
   const onSubmit = async (values: z.infer<typeof ResisterSchema>) => {
     setError('');
 
     const { redirectPath, error } = await sendResisterToken(values);
-    if (redirectPath) redirect(redirectPath);
+    if (redirectPath) replace(redirectPath);
     else if (error) setError(error);
   };
 
