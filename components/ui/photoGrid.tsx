@@ -147,9 +147,6 @@ export default function PhotoGrid({
     };
   }, [fetchMoreData, hasMore]);
 
-  console.log(columns);
-
-  // return null;
   return (
     <>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-10'>
@@ -174,10 +171,10 @@ export default function PhotoGrid({
                   className={cn(
                     columns.length === 1
                       ? ''
-                      : 'absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'
+                      : 'absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300'
                   )}
                 >
-                  <div className='absolute top-4 right-4 flex gap-2.5 pointer-events-auto'>
+                  <div className='absolute top-4 right-4 flex gap-2.5'>
                     <button
                       title='이 이미지에 좋아요 표시'
                       onClick={(e) =>
@@ -262,7 +259,11 @@ export function DownloadButton(props: ButtonProps) {
     window.URL.revokeObjectURL(url);
   };
   return (
-    <button onClick={onClick} className={className}>
+    <button
+      onClick={onClick}
+      className={className}
+      title='이 이미지를 다운로드'
+    >
       {children}
     </button>
   );

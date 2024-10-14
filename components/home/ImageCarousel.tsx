@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { TouchEvent, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Carousel,
@@ -30,41 +30,65 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
     }
   }, [carouselApi, currentTab, imageGroup]);
 
-  const handleTouchEnd = (direction: 'next' | 'prev') => {
-    const currentIndex = imageGroup.findIndex(
-      ({ name }) => name === currentTab
-    );
-    let newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-
-    // 경로 업데이트
-    if (newIndex >= 0 && newIndex < imageGroup.length) {
-      const newTab = imageGroup[newIndex].name;
-      router.push(`/${newTab}`);
-    }
-  };
-
   let startX = 0;
   let startY = 0;
+
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  };
+
+  // const handleTouchEnd = (direction: 'next' | 'prev') => {
+  //   const currentIndex = imageGroup.findIndex(
+  //     ({ name }) => name === currentTab
+  //   );
+  //   const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+
+  //   if (newIndex >= 0 && newIndex < imageGroup.length) {
+  //     const newTab = imageGroup[newIndex].name;
+  //     router.replace(`/${newTab}`);
+  //   }
+  // };
+
+  // (e) => {
+  //   const endX = e.changedTouches[0].clientX;
+  //   const endY = e.changedTouches[0].clientY;
+  //   const diffX = Math.abs(startX - endX);
+  //   const diffY = Math.abs(startY - endY);
+  //   if (diffY > diffX) return;
+  //   if (e.changedTouches[0].clientX < window.innerWidth / 2) {
+  //     handleTouchEnd('next');
+  //   } else {
+  //     handleTouchEnd('prev');
+  //   }
+  // }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const endX = e.changedTouches[0].clientX; // 터치 종료 시 X 좌표
+    const endY = e.changedTouches[0].clientY; // 터치 종료 시 Y 좌표
+    const diffX = endX - startX; // X축 이동 거리
+    const diffY = endY - startY; // Y축 이동 거리
+    const threshold = 50;
+
+    // 세로 이동보다 가로 이동이 크고 threshold 값을 초과한 경우만 처리
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+      const currentIndex = imageGroup.findIndex(
+        ({ name }) => name === currentTab
+      );
+      const newIndex = diffX > 0 ? currentIndex + 1 : currentIndex - 1;
+
+      if (newIndex >= 0 && newIndex < imageGroup.length) {
+        const newTab = imageGroup[newIndex].name;
+        router.replace(`/${newTab}`);
+      }
+    }
+  };
 
   return (
     <Carousel
       setApi={setCarouselpi}
-      onTouchStart={(e) => {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      }}
-      onTouchEnd={(e) => {
-        const endX = e.changedTouches[0].clientX;
-        const endY = e.changedTouches[0].clientY;
-        const diffX = Math.abs(startX - endX);
-        const diffY = Math.abs(startY - endY);
-        if (diffY > diffX) return;
-        if (e.changedTouches[0].clientX < window.innerWidth / 2) {
-          handleTouchEnd('next');
-        } else {
-          handleTouchEnd('prev');
-        }
-      }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <CarouselContent className='h-screen'>
         {imageGroup.map(({ name, images }) => (
