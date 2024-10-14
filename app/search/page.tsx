@@ -21,16 +21,20 @@ export default async function Page({
   };
   const initialData = await fetchBySearch(query);
 
-  if (!keyword) {
+  if (!initialData.length) {
     return <div>Keyword not found</div>;
   }
 
-  const { ko, desc } = keyword;
-
   return (
     <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>
-      <h1 className='font-bold text-5xl my-5'>{ko}</h1>
-      <p className='text-2xl mb-5'>{desc}</p>
+      {keyword ? (
+        <>
+          <h1 className='font-bold text-5xl my-5'>{keyword.ko}</h1>
+          <p className='text-2xl mb-5'>{keyword.desc}</p>
+        </>
+      ) : (
+        <h1 className='font-bold text-5xl my-5'>{slug} 검색결과</h1>
+      )}
       <PhotoGrid
         collections={collections}
         fetchFunction={fetchBySearch}

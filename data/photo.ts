@@ -13,20 +13,41 @@ export const fetchBySearch: PhotoGridFetchFunction<{
   skip: number = 0,
   take: number = 10
 ) => {
+  const { userId, slug } = query;
+
   const res = await db.photo.findMany({
     where: {
-      topics: {
-        some: {
-          topic: {
-            slug: query.slug,
+      OR: [
+        {
+          tags: {
+            some: {
+              tag: {
+                title: {
+                  contains: slug,
+                  mode: 'insensitive',
+                },
+              },
+            },
           },
         },
-      },
+        {
+          topics: {
+            some: {
+              topic: {
+                slug: {
+                  contains: slug,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      ],
     },
     include: {
       userLikes: {
         where: {
-          userId: query.userId,
+          userId: userId, // 사용자가 좋아요한 항목 표시
         },
       },
     },
