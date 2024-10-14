@@ -75,7 +75,7 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
       const currentIndex = imageGroup.findIndex(
         ({ name }) => name === currentTab
       );
-      const newIndex = diffX > 0 ? currentIndex + 1 : currentIndex - 1;
+      const newIndex = diffX > 0 ? currentIndex - 1 : currentIndex + 1;
 
       if (newIndex >= 0 && newIndex < imageGroup.length) {
         const newTab = imageGroup[newIndex].name;
