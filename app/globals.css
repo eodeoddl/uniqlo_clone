@@ -80,3 +80,9 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .image-cover-icon {
+    @apply p-1 rounded-md bg-gray-50 text-slate-600 cursor-pointer hover:text-slate-700 hover:bg-slate-300;
+  }
+}

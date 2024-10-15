@@ -15,8 +15,9 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { sendResisterToken } from '@/actions/resister';
+import { useRouter } from 'next/navigation';
 
 export default function ResisterForm() {
   const form = useForm<z.infer<typeof ResisterSchema>>({
@@ -28,18 +29,16 @@ export default function ResisterForm() {
       name: '',
     },
   });
-
-  const [isPending, startTransition] = useTransition();
+  const { isSubmitting } = form.formState;
+  const { replace } = useRouter();
   const [error, setError] = useState<string | undefined>();
 
-  const onSubmit = (values: z.infer<typeof ResisterSchema>) => {
+  const onSubmit = async (values: z.infer<typeof ResisterSchema>) => {
     setError('');
 
-    startTransition(async () => {
-      const res = await sendResisterToken(values);
-
-      if (res?.error) setError(error);
-    });
+    const { redirectPath, error } = await sendResisterToken(values);
+    if (redirectPath) replace(redirectPath);
+    else if (error) setError(error);
   };
 
   return (
@@ -48,6 +47,7 @@ export default function ResisterForm() {
       backButtonLabel='계정이 있으신가요?'
       backButtonHref='/auth/login'
       showSocial
+      isSubmitting={isSubmitting}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
@@ -61,7 +61,7 @@ export default function ResisterForm() {
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isPending}
+                      disabled={isSubmitting}
                       placeholder='닉네임을 입력하세요'
                     />
                   </FormControl>
@@ -78,7 +78,7 @@ export default function ResisterForm() {
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isPending}
+                      disabled={isSubmitting}
                       placeholder='Email을 입력하세요'
                       type='email'
                     />
@@ -96,7 +96,7 @@ export default function ResisterForm() {
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isPending}
+                      disabled={isSubmitting}
                       placeholder='비밀번호를 입력하세요'
                       type='password'
                     />
@@ -114,7 +114,7 @@ export default function ResisterForm() {
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isPending}
+                      disabled={isSubmitting}
                       placeholder='비밀번호를 확인하세요'
                       type='password'
                     />
@@ -125,7 +125,7 @@ export default function ResisterForm() {
             />
           </div>
           <FormError message={error} />
-          <Button type='submit' disabled={isPending} className='w-full'>
+          <Button type='submit' disabled={isSubmitting} className='w-full'>
             계정 생성하기
           </Button>
         </form>

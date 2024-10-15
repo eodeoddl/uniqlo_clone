@@ -16,7 +16,6 @@ import { Button } from '../ui/button';
 import { EditPasswordSchema } from '@/schemas';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTransition } from 'react';
 import { editPassword, editPasswordByToken } from '@/actions/editPassword';
 import { useSearchParams } from 'next/navigation';
 
@@ -28,26 +27,21 @@ export default function PasswordEditForm() {
       confirmPassword: '',
     },
   });
-
+  const { isSubmitting } = form.formState;
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
-  const [isPending, startTransition] = useTransition();
+  const onSubmit = async (values: z.infer<typeof EditPasswordSchema>) => {
+    try {
+      const { message, type } = token
+        ? await editPasswordByToken(values, token)
+        : await editPassword(values);
 
-  const onSubmit = (values: z.infer<typeof EditPasswordSchema>) => {
-    console.log('onsubmit active');
-    startTransition(async () => {
-      try {
-        const { message, type } = token
-          ? await editPasswordByToken(values, token)
-          : await editPassword(values);
-
-        if (type === 'VerificationError') form.setError('root', { message });
-      } catch (error) {
-        if (error instanceof Error)
-          form.setError('root', { message: error.message });
-      }
-    });
+      if (type === 'VerificationError') form.setError('root', { message });
+    } catch (error) {
+      if (error instanceof Error)
+        form.setError('root', { message: error.message });
+    }
   };
 
   return (
@@ -70,7 +64,7 @@ export default function PasswordEditForm() {
                         {...field}
                         type='password'
                         placeholder='비밀번호'
-                        disabled={isPending}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -88,7 +82,7 @@ export default function PasswordEditForm() {
                         {...field}
                         type='password'
                         placeholder='비밀번호 확인'
-                        disabled={isPending}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -98,14 +92,18 @@ export default function PasswordEditForm() {
               {form.formState.errors.root && (
                 <FormError message={form.formState.errors.root.message} />
               )}
-              <Button type='submit' disabled={isPending}>
+              <Button type='submit' disabled={isSubmitting}>
                 변경하기
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter>
-          <BackButton href='/auth/login' label='뒤로가기' />
+          <BackButton
+            href='/auth/login'
+            label='뒤로가기'
+            disabled={isSubmitting}
+          />
         </CardFooter>
       </Card>
     </div>

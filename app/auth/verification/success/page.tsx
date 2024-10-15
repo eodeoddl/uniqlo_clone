@@ -8,7 +8,7 @@ export default async function Page() {
   return (
     <div>
       <FormSuccess message={message} />
-      <BackButton href='/' label='홈으로 돌아가기' />
+      <BackButton href='/' label='홈으로 돌아가기' disabled={false} />
     </div>
   );
 }

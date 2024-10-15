@@ -6,7 +6,6 @@ import { db } from '@/lib/db';
 import { getUserByEmail } from '@/data/user';
 import { sendVerificationEmail } from '@/lib/mail';
 import { generateToken } from '@/lib/token';
-import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { tokenValidation } from './verification';
 import { AuthError } from 'next-auth';
@@ -39,7 +38,7 @@ export const sendResisterToken = async (
         expires_at: expires,
       },
     });
-    redirect('/auth/verification');
+    return { redirectPath: '/auth/verification' };
   } catch (error) {
     return { error: '알 수 없는 오류' };
   }
