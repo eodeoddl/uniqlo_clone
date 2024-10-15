@@ -1,5 +1,5 @@
-import Test from '@/components/home/test';
 import React from 'react';
+import Test from '@/components/home/test';
 
 const tabs = ['women', 'men', 'kids', 'baby'];
 
@@ -7,7 +7,7 @@ export async function generateStaticParams() {
   return tabs.map((tab) => ({ tab }));
 }
 
-function Layout({
+export default function Layout({
   children,
   params,
 }: {
@@ -22,5 +22,3 @@ function Layout({
     </>
   );
 }
-
-export default React.memo(Layout);

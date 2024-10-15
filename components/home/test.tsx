@@ -1,35 +1,19 @@
-'use client';
+"use client";
 
-import useEmblaCarousel from 'embla-carousel-react';
-import React, { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import React, { useEffect, useRef } from "react";
 
-const tabs = ['women', 'men', 'kids', 'baby'];
+import Link from "next/link";
+import useEmblaCarousel from "embla-carousel-react";
+import { usePathname } from "next/navigation";
+
+const tabs = ["women", "men", "kids", "baby"];
 
 export default function Test() {
+  console.log("carousel re load");
   const pathname = usePathname();
-  const initialIndex = tabs.indexOf(pathname.split('/')[1]);
+  const initialIndex = tabs.indexOf(pathname.split("/")[1]);
   const [emblaRef, emblaApi] = useEmblaCarousel({ startIndex: initialIndex });
   const prevIndexRef = useRef(initialIndex);
-
-  console.log(initialIndex, prevIndexRef.current);
-
-  // useEffect(() => {
-  //   if (!emblaApi) return;
-
-  //   const handleRouteChange = () => {
-  //     const index = tabs.indexOf(pathname.split('/')[1]);
-  //     console.log(prevIndexRef.current, index);
-  //     if (index !== -1) {
-  //       prevIndexRef.current = index;
-  //       console.log('route change', index);
-  //       emblaApi.scrollTo(index);
-  //     }
-  //   };
-
-  //   handleRouteChange();
-  // }, [pathname, emblaApi]);
 
   return (
     <div className='relative w-screen h-screen overflow-hidden'>
