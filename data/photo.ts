@@ -68,5 +68,31 @@ export const fetchById = async (id: string) => {
     },
   });
   if (!res) throw new Error('Id is not exist');
-  return res;
+  return res as ImageType;
 };
+
+export async function getTagsAndTopicsByPhotoId(photoId: string) {
+  // 1. Photo에 연결된 tags 가져오기
+  const tags = await db.tag.findMany({
+    where: {
+      photos: {
+        some: {
+          photoId: photoId, // 해당 photoId와 연결된 tag
+        },
+      },
+    },
+  });
+
+  // 2. Photo에 연결된 topics 가져오기
+  const topics = await db.topic.findMany({
+    where: {
+      photos: {
+        some: {
+          photoId: photoId, // 해당 photoId와 연결된 topic
+        },
+      },
+    },
+  });
+
+  return [...tags.map(({ title }) => title), ...topics.map(({ slug }) => slug)];
+}

@@ -154,7 +154,7 @@ export default function PhotoGrid({
           <div key={colIndex} className='flex flex-col gap-4'>
             {column.map((item) => (
               <div
-                key={`${item.id}-${colIndex}`}
+                key={item.id}
                 className='relative group cursor-zoom-in rounded-lg overflow-hidden'
                 style={{ aspectRatio: `${item.width} / ${item.height}` }}
               >
@@ -168,14 +168,14 @@ export default function PhotoGrid({
                   />
                 </Link>
                 <div
-                  className={cn(
-                    columns.length === 1
-                      ? ''
-                      : 'absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-                  )}
+                  className={cn({
+                    'absolute inset-0 bg-[rgba(0,0,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none':
+                      columns.length !== 1,
+                  })}
                 >
                   <div className='absolute top-4 right-4 flex gap-2.5'>
                     <button
+                      className='pointer-events-auto'
                       title='이 이미지에 좋아요 표시'
                       onClick={(e) =>
                         handleAuthCheck(e, () =>
@@ -194,6 +194,7 @@ export default function PhotoGrid({
                       />
                     </button>
                     <button
+                      className='pointer-events-auto'
                       title='이 이미지를 컬렉션에 추가'
                       onClick={(e) =>
                         handleAuthCheck(e, () => {
@@ -208,7 +209,7 @@ export default function PhotoGrid({
                   <DownloadButton
                     downloadUrl={item.urls.regular}
                     filename={item.id}
-                    className='absolute bottom-4 right-4'
+                    className='absolute bottom-4 right-4 pointer-events-auto'
                   >
                     <Download size='32' className='image-cover-icon' />
                   </DownloadButton>
