@@ -1,10 +1,10 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { Home, Search, User, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchInput from './searchInput';
 import KeyWordCarousel from './keywordCarousel';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Popover,
   PopoverContent,
@@ -21,17 +21,23 @@ export default function BottomNavigation({
   const [searchActive, setSearchActive] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { push } = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleUserIconClick = () => {
     if (!session) push('/auth/login');
     else setPopoverOpen(true);
   };
 
+  useEffect(() => {
+    setSearchActive(false);
+  }, [pathname, searchParams]);
+
   return (
     <div
       className={cn({
         'fixed left-0 bottom-0 bg-white w-full flex flex-col gap-3 pt-4':
-          searchActive === true,
+          searchActive,
       })}
     >
       {searchActive && (

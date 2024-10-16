@@ -1,3 +1,4 @@
+import SearchButton from '@/components/search/searchButton';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -10,17 +11,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { fetchById } from '@/data/photo';
-import { ImageType } from '@/types';
+import { fetchById, getTagsAndTopicsByPhotoId } from '@/data/photo';
 import { AlertDialogTitle } from '@radix-ui/react-alert-dialog';
 import { ChevronDown, Heart, Plus, X } from 'lucide-react';
 import Image from 'next/image';
 
 export default async function Modal({ params }: { params: { id: string } }) {
-  const photo = (await fetchById(params.id)) as ImageType;
+  const photo = await fetchById(params.id);
+  const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
+
   return (
     <AlertDialog defaultOpen>
-      <AlertDialogContent useRouterModal className='w-full sm:w-10/12'>
+      <AlertDialogContent
+        useRouterModal
+        className='w-full sm:w-10/12 max-h-[90%] overflow-auto'
+      >
         <AlertDialogTitle className='flex flex-col sm:flex-row gap-2'>
           <span className='font-semibold text-xl sm:text-2xl'>
             {photo.alt_description || 'None-titled'}
@@ -79,6 +84,9 @@ export default async function Modal({ params }: { params: { id: string } }) {
             style={{ objectFit: 'contain' }}
           />
         </AlertDialogDescription>
+        <div className='flex flex-wrap'>
+          <SearchButton tagsAndTopics={tagsAndTopics} />
+        </div>
         <AlertDialogCancel
           className='mx-auto border-0 w-fit hover:bg-transparent'
           useRouterModal
