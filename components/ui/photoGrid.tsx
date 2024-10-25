@@ -158,7 +158,10 @@ export default function PhotoGrid({
                 className='relative group cursor-zoom-in rounded-lg overflow-hidden'
                 style={{ aspectRatio: `${item.width} / ${item.height}` }}
               >
-                <Link href={`/search/${item.id}`}>
+                <Link
+                  href={`/search/${item.id}`}
+                  className='relative block w-full h-full'
+                >
                   <Image
                     src={item.urls.regular}
                     fill

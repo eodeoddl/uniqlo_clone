@@ -22,6 +22,7 @@ export default async function Page({
     slug,
   };
   const initialData = await fetchBySearch(query);
+  // console.log(initialData);
 
   return (
     <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>

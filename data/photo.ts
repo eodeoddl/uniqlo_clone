@@ -15,6 +15,8 @@ export const fetchBySearch: PhotoGridFetchFunction<{
 ) => {
   const { userId, slug } = query;
 
+  console.log('asdfadfasdf ', userId);
+
   const res = await db.photo.findMany({
     where: {
       OR: [
@@ -45,11 +47,13 @@ export const fetchBySearch: PhotoGridFetchFunction<{
       ],
     },
     include: {
-      userLikes: {
-        where: {
-          userId: userId, // 사용자가 좋아요한 항목 표시
-        },
-      },
+      userLikes: userId
+        ? {
+            where: {
+              userId: userId, // userId가 있을 때만 조건 적용
+            },
+          }
+        : false, // userId가 없으면 userLikes를 포함하지 않음
     },
     skip,
     take,
@@ -57,7 +61,7 @@ export const fetchBySearch: PhotoGridFetchFunction<{
 
   return res.map((photo) => ({
     ...photo,
-    liked_by_user: photo.userLikes.length > 0,
+    liked_by_user: userId ? photo.userLikes.length > 0 : false,
   })) as ImageType[];
 };
 

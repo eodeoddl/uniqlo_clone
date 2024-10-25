@@ -1,8 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function SearchButton({
   tagsAndTopics,
@@ -11,21 +10,33 @@ export default function SearchButton({
   tagsAndTopics: string[];
   className?: string;
 }) {
-  const { push } = useRouter();
-  const handleSearch = (keyword: string) => {
-    push(`/search?query=${keyword}`);
-  };
   return (
     <>
       {tagsAndTopics.map((name) => (
-        <Button
-          className={cn('mx-3 mt-3 text-lg', className)}
+        <Link
+          href={`/search?query=${name}`}
+          className={cn(
+            'mx-2 my-1 text-lg p-1 rounded bg-gray-100 text-gray-800 hover:underline transition duration-150',
+            className
+          )}
           key={name}
-          onClick={() => handleSearch(name)}
         >
           {name}
-        </Button>
+        </Link>
       ))}
     </>
   );
+  // return (
+  //   <>
+  //     {tagsAndTopics.map((name) => (
+  //       <Button
+  //         className={cn('mx-3 mt-3 text-lg', className)}
+  //         key={name}
+  //         onClick={() => handleSearch(name)}
+  //       >
+  //         {name}
+  //       </Button>
+  //     ))}
+  //   </>
+  // );
 }
