@@ -15,8 +15,6 @@ export const fetchBySearch: PhotoGridFetchFunction<{
 ) => {
   const { userId, slug } = query;
 
-  console.log('asdfadfasdf ', userId);
-
   const res = await db.photo.findMany({
     where: {
       OR: [

@@ -160,6 +160,7 @@ export default function PhotoGrid({
               >
                 <Link
                   href={`/search/${item.id}`}
+                  scroll={false}
                   className='relative block w-full h-full'
                 >
                   <Image

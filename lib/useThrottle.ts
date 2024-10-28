@@ -2,9 +2,9 @@ import { useEffect, useRef } from 'react';
 
 export const useThrottle = <T extends unknown[]>(
   callback: (...params: T) => void,
-  time = 1000
+  time = 500
 ) => {
-  const timeout = useRef<ReturnType<typeof setTimeout>>();
+  const timeout = useRef<NodeJS.Timeout | null>(null);
 
   const throttleFn = (...args: T) => {
     // 등록된 실행 함수가 있으면 callback 실행을 하지않음.
@@ -12,7 +12,7 @@ export const useThrottle = <T extends unknown[]>(
     if (timeout.current) return;
     timeout.current = setTimeout(() => {
       callback(...args);
-      timeout.current = undefined;
+      timeout.current = null;
     }, time);
   };
 

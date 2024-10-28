@@ -25,7 +25,7 @@ export default async function Modal({ params }: { params: { id: string } }) {
     <AlertDialog defaultOpen>
       <AlertDialogContent
         useRouterModal
-        className='w-full sm:w-10/12 max-h-[90vh] overflow-hidden p-0'
+        className='w-full sm:w-10/12 lg:w-7/12 max-h-[90vh] overflow-hidden p-0'
       >
         <ScrollArea className='w-full max-h-[90vh] p-4 sm:p-8'>
           <div className='grid gap-2'>
