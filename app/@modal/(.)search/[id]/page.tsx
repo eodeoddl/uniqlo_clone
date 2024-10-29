@@ -1,20 +1,21 @@
-import SearchButton from '@/components/search/searchButton';
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
-import { DownloadButton } from '@/components/ui/photoGrid';
+import { ChevronDown, Heart, Plus, X } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { fetchById, getTagsAndTopicsByPhotoId } from '@/data/photo';
+
 import { AlertDialogTitle } from '@radix-ui/react-alert-dialog';
-import { ChevronDown, Heart, Plus, X } from 'lucide-react';
+import { DownloadButton } from '@/components/ui/photoGrid';
 import Image from 'next/image';
+import SearchButton from '@/components/search/searchButton';
 
 export default async function Modal({ params }: { params: { id: string } }) {
   const photo = await fetchById(params.id);
@@ -24,7 +25,7 @@ export default async function Modal({ params }: { params: { id: string } }) {
     <AlertDialog defaultOpen>
       <AlertDialogContent
         useRouterModal
-        className='w-full sm:w-10/12 max-h-[90%] overflow-auto'
+        className='grid grid-rows-auto w-full sm:w-10/12 max-h-[90%] overflow-auto'
       >
         <AlertDialogTitle className='flex flex-col sm:flex-row gap-2'>
           <span className='font-semibold text-xl sm:text-2xl'>
@@ -76,7 +77,10 @@ export default async function Modal({ params }: { params: { id: string } }) {
             </Popover>
           </div>
         </AlertDialogTitle>
-        <AlertDialogDescription className='relative h-[70vh]'>
+        <AlertDialogDescription
+          className='relative max-h-[70vh] max-w-full'
+          style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+        >
           <Image
             src={photo.urls.regular}
             alt={photo.alt_description || '제목없음'}

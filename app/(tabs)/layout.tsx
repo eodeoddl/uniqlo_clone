@@ -1,10 +1,10 @@
-import { auth } from '@/auth';
 import BottomNavigation from '@/components/home/bottom_nav/nav';
 import ImageCarousel from '@/components/home/ImageCarousel';
-import TopNavigation from '@/components/home/top_nav/navi';
-import { tabs } from '@/lib/constance';
-import { db } from '@/lib/db';
 import { ImageType } from '@/types';
+import TopNavigation from '@/components/home/top_nav/navi';
+import { auth } from '@/auth';
+import { db } from '@/lib/db';
+import { tabs } from '@/lib/constance';
 
 export default async function Layout({
   children,

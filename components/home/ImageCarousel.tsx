@@ -1,17 +1,18 @@
 'use client';
 
-import React, { TouchEvent, useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
 } from '../ui/carousel';
-import { useThrottle } from '@/lib/useThrottle';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { ImageGroupType, ImageType } from '@/types';
+import React, { TouchEvent, useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { useThrottle } from '@/lib/useThrottle';
 
 interface ImageCarouselProps {
   imageGroup: ImageGroupType[];

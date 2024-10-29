@@ -1,7 +1,8 @@
 import { AlertDialog, AlertDialogContent } from '@/components/ui/alert-dialog';
-import { db } from '@/lib/db';
-import { ImageType } from '@/types';
+
 import Image from 'next/image';
+import { ImageType } from '@/types';
+import { db } from '@/lib/db';
 
 export default async function Modal({ params }: { params: { id: string } }) {
   const photo = (await db.photo.findUnique({
@@ -21,7 +22,6 @@ export default async function Modal({ params }: { params: { id: string } }) {
             fill
           />
         </div>
-        <div>{/* <CollectionsModal session={session} /> */}</div>
       </AlertDialogContent>
     </AlertDialog>
   );

@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export default function SearchButton({
@@ -11,21 +10,20 @@ export default function SearchButton({
   tagsAndTopics: string[];
   className?: string;
 }) {
-  const { push } = useRouter();
-  const handleSearch = (keyword: string) => {
-    push(`/search?query=${keyword}`);
-  };
   return (
-    <>
-      {tagsAndTopics.map((name) => (
-        <Button
-          className={cn('mx-3 mt-3 text-lg', className)}
-          key={name}
-          onClick={() => handleSearch(name)}
-        >
-          {name}
-        </Button>
-      ))}
-    </>
+    <div className='grid grid-rows-auto w-full'>
+      <span className=''># 연관검색어</span>
+      <div>
+        {tagsAndTopics.map((keyword) => (
+          <Link
+            href={`/search?query=${keyword}`}
+            className={cn('mx-3 mt-3 text-lg', className)}
+            key={keyword}
+          >
+            {keyword}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
