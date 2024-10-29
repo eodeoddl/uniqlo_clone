@@ -42,7 +42,6 @@ export const getLikedByUserPhotos: PhotoGridFetchFunction<string> = async (
   skip = 0,
   take = 10
 ) => {
-  console.log('server action user Id => ', userId);
   const photos = await db.userPhotoLikes.findMany({
     where: {
       userId,

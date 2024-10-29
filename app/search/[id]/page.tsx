@@ -9,12 +9,11 @@ import {
 } from '@/components/ui/popover';
 import { DownloadButton } from '@/components/ui/photoGrid';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import SearchButton from '@/components/search/searchButton';
 
 export default async function Page({ params }: { params: { id: string } }) {
-  const photo = await fetchById(params.id);
   const session = await auth();
+  const photo = await fetchById(params.id, session?.user.id);
   const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
 
   return (
@@ -25,7 +24,11 @@ export default async function Page({ params }: { params: { id: string } }) {
         </span>
         <div className='flex items-center gap-1.5 ml-0 sm:ml-auto'>
           <button title='이 이미지에 좋아요 표시'>
-            <Heart size='32' className='image-cover-icon border' />
+            <Heart
+              size='32'
+              className='image-cover-icon border'
+              fill={photo.liked_by_user ? 'red' : 'none'}
+            />
           </button>
           <button title='이 이미지를 컬렉션에 추가'>
             <Plus size='32' className='image-cover-icon border' />
@@ -81,12 +84,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           sizes='(max-width: 400px) 200px, (max-width: 1080px) 500px, 1080px'
         />
       </div>
-      <div className='grid grid-rows-auto'>
-        <span className='text-2xl'># 연관 검색어</span>
-        <div>
-          <SearchButton tagsAndTopics={tagsAndTopics} />
-        </div>
-      </div>
+      <SearchButton tagsAndTopics={tagsAndTopics} />
       <BottomNavigation session={session} />
     </div>
   );

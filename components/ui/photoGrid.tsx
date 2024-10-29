@@ -20,6 +20,7 @@ import {
   CollectionWithPhotos,
   PhotoGridFetchFunction,
 } from '@/types';
+import { Session } from 'next-auth';
 
 interface PhotoGridProps<T = any> {
   query: T;
@@ -78,7 +79,7 @@ export default function PhotoGrid({
 
   // 사용자 로그인 체크 헬퍼함수
   const handleAuthCheck = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     callback: () => void
   ) => {
     e.stopPropagation();

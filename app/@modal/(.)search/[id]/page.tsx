@@ -1,3 +1,5 @@
+import { toggleLike } from '@/actions/handleLike';
+import { auth } from '@/auth';
 import SearchButton from '@/components/search/searchButton';
 import {
   AlertDialog,
@@ -18,8 +20,14 @@ import { ChevronDown, Heart, Plus, X } from 'lucide-react';
 import Image from 'next/image';
 
 export default async function Modal({ params }: { params: { id: string } }) {
-  const photo = await fetchById(params.id);
+  const session = await auth();
+  const photo = await fetchById(params.id, session?.user.id);
   const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
+
+  // const handleLike = useAuthCheck(
+  //   () => toggleLike(session?.user.id!, photo.id),
+  //   session
+  // );
 
   return (
     <AlertDialog defaultOpen>
@@ -35,7 +43,11 @@ export default async function Modal({ params }: { params: { id: string } }) {
               </span>
               <div className='flex items-center gap-1.5 ml-0 sm:ml-auto'>
                 <button title='이 이미지에 좋아요 표시'>
-                  <Heart size='32' className='image-cover-icon border' />
+                  <Heart
+                    size='32'
+                    className='image-cover-icon border'
+                    fill={photo.liked_by_user ? 'red' : 'none'}
+                  />
                 </button>
                 <button title='이 이미지를 컬렉션에 추가'>
                   <Plus size='32' className='image-cover-icon border' />
