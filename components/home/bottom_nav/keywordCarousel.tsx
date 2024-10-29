@@ -26,7 +26,7 @@ export default function KeyWordCarousel() {
   };
 
   return (
-    <Carousel setApi={setCarouselApi} className='w-3/4 sm:w-96 mx-auto'>
+    <Carousel setApi={setCarouselApi} className='w-2/3 sm:w-96 mx-auto'>
       <CarouselContent className='gap-4'>
         {keywords.map(({ ko, en }) => (
           <CarouselItem

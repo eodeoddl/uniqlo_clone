@@ -45,11 +45,13 @@ export const fetchBySearch: PhotoGridFetchFunction<{
       ],
     },
     include: {
-      userLikes: {
-        where: {
-          userId: userId, // 사용자가 좋아요한 항목 표시
-        },
-      },
+      userLikes: userId
+        ? {
+            where: {
+              userId: userId, // userId가 있을 때만 조건 적용
+            },
+          }
+        : false, // userId가 없으면 userLikes를 포함하지 않음
     },
     skip,
     take,
@@ -57,18 +59,30 @@ export const fetchBySearch: PhotoGridFetchFunction<{
 
   return res.map((photo) => ({
     ...photo,
-    liked_by_user: photo.userLikes.length > 0,
+    liked_by_user: userId ? photo.userLikes.length > 0 : false,
   })) as ImageType[];
 };
 
-export const fetchById = async (id: string) => {
+export const fetchById = async (id: string, userId?: string) => {
   const res = await db.photo.findUnique({
     where: {
       id,
     },
+    include: {
+      userLikes: userId
+        ? {
+            where: { userId },
+          }
+        : false, // userId가 없으면 userLikes를 포함하지 않음
+    },
   });
-  if (!res) throw new Error('Id is not exist');
-  return res as ImageType;
+
+  if (!res) throw new Error('Id does not exist');
+
+  return {
+    ...res,
+    liked_by_user: userId ? res.userLikes.length > 0 : false,
+  } as ImageType;
 };
 
 export async function getTagsAndTopicsByPhotoId(photoId: string) {

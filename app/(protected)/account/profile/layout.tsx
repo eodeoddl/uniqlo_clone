@@ -3,7 +3,7 @@ import { Folders, Heart, Images } from 'lucide-react';
 
 export default async function Layout({ tabs }: { tabs: React.ReactNode }) {
   return (
-    <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>
+    <div className='w-11/12 max-w-[1200px] mx-auto py-16'>
       <TabGroup
         basePath='/account/profile'
         tabItems={[

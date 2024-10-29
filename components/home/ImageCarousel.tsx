@@ -39,6 +39,7 @@ export default function ImageCarousel({ imageGroup }: ImageCarouselProps) {
     startY = e.touches[0].clientY;
   };
 
+  // 모바일 터치 이벤트 처리
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     const endX = e.changedTouches[0].clientX;
     const endY = e.changedTouches[0].clientY;
@@ -86,9 +87,11 @@ const VerticalCarousel = ({ images }: { images: ImageType[] }) => {
 
   const handleOnWheel = useThrottle(
     (event: React.WheelEvent<HTMLDivElement>) => {
-      const threshold = 2;
+      const threshold = event.deltaMode === 0 ? 2 : 50;
+      const deltaY = event.deltaMode === 1 ? event.deltaY * 20 : event.deltaY; // deltaMode가 1인 경우, 대략적인 픽셀 단위로 변환
+
       if (carouselApi) {
-        if (Math.abs(event.deltaY) > threshold) {
+        if (Math.abs(deltaY) > threshold) {
           event.deltaY > 0
             ? carouselApi.scrollNext()
             : carouselApi.scrollPrev();
