@@ -8,8 +8,10 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const session = await auth();
   if (!session) {
-    redirect('/modal/auth/login'); // 여기를 모달 로그인 라우트로
+    redirect('/modal/auth/login');
+    return null;
   }
-  const collections = await getAllCollectionsByUser(session?.user.id!);
+  const userId = session.user.id;
+  const collections = await getAllCollectionsByUser(userId);
   return <UserCollections collections={collections} />;
 }

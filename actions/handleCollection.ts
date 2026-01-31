@@ -1,10 +1,12 @@
 'use server';
 
-import { db } from '@/lib/db';
 import { CollectionWithPhotos, ImageType } from '@/types';
+
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 export async function getAllCollectionsByUser(userId: string) {
+  if (!userId) return [];
   const collections = await db.collection.findMany({
     where: {
       userId: userId, // 특정 사용자의 ID를 기준으로 필터링
@@ -58,7 +60,7 @@ export async function createNewCollection(
   userId: string,
   photoId: string,
   title: string,
-  description?: string
+  description?: string,
 ) {
   const newCollection = await db.collection.create({
     data: {
@@ -83,7 +85,7 @@ export async function createNewCollection(
   return {
     ...newCollection,
     photos: newCollection.photos.map(
-      (collectionPhoto) => collectionPhoto.photo
+      (collectionPhoto) => collectionPhoto.photo,
     ),
   } as CollectionWithPhotos;
 }
@@ -117,7 +119,7 @@ export async function getCollectionById(collectionId: string) {
 export async function getCollectionPhotos(
   collectionId: string,
   skip: number = 0,
-  take: number = 10
+  take: number = 10,
 ) {
   const photos = await db.collectionOnPhotos.findMany({
     where: { collectionId },
@@ -129,7 +131,7 @@ export async function getCollectionPhotos(
   });
 
   const transformedPhotos = photos.map(
-    (collectionOnPhoto) => collectionOnPhoto.photo
+    (collectionOnPhoto) => collectionOnPhoto.photo,
   );
 
   return transformedPhotos as ImageType[];
@@ -138,7 +140,7 @@ export async function getCollectionPhotos(
 export async function editCollection(
   collectionId: string,
   title: string,
-  description?: string
+  description?: string,
 ) {
   await db.collection.update({
     where: {
