@@ -18,11 +18,16 @@ import Image from 'next/image';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import SearchButton from '@/components/search/searchButton';
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 import { toggleLike } from '@/actions/handleLike';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Modal({ params }: { params: { id: string } }) {
   const session = await auth();
-  const photo = await fetchById(params.id, session?.user.id);
+  if (!session) redirect('/modal/auth/login');
+
+  const photo = await fetchById(params.id, session.user.id);
   const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
 
   // const handleLike = useAuthCheck(
