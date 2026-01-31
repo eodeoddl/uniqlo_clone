@@ -9,12 +9,9 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const session = await auth();
 
-  if (!session) {
-    redirect('/modal/auth/login');
-  }
+  if (!session) redirect('/modal/auth/login');
 
   const userId = session.user.id;
-  if (!userId) return null;
 
   const collections = await getAllCollectionsByUser(userId);
   const initialData = await getLikedByUserPhotos(userId);

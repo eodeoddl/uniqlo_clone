@@ -96,3 +96,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
+console.log(handlers, auth, signIn, signOut);
