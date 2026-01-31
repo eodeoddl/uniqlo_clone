@@ -23,8 +23,6 @@ export default function BottomNavigation() {
   const searchQuery = searchParams.toString();
   const { data: session, status } = useSession();
 
-  // if (status === 'loading') return null;
-
   const handleUserIconClick = () => {
     if (!session) push('/auth/login');
     else setPopoverOpen(true);
