@@ -1,8 +1,7 @@
 'use client';
 
-import { Check, Minus, Plus, X } from 'lucide-react';
 import { AlertDialogDescription, AlertDialogTitle } from '../ui/alert-dialog';
-import { useState } from 'react';
+import { Check, Minus, Plus, X } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -11,19 +10,21 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { useForm } from 'react-hook-form';
-import { Input } from '../ui/input';
+
+import { AlertDialogCancel } from '@radix-ui/react-alert-dialog';
 import { Button } from '../ui/button';
+import { CollectionWithPhotos } from '@/types';
+import Image from 'next/image';
+import { Input } from '../ui/input';
+import { Session } from 'next-auth';
 import { Textarea } from '../ui/textarea';
+import { createNewCollection } from '@/actions/handleCollection';
+import { useDebounce } from '@/lib/useDebounce';
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Image from 'next/image';
-import { createNewCollection } from '@/actions/handleCollection';
-import { CollectionWithPhotos } from '@/types';
-import { useDebounce } from '@/lib/useDebounce';
-import { useRouter } from 'next/navigation';
-import { AlertDialogCancel } from '@radix-ui/react-alert-dialog';
-import { Session } from 'next-auth';
 
 const formSchema = z.object({
   title: z.string({
@@ -61,7 +62,7 @@ export default function CollectionCreateModal({
       session.user.id,
       selectedPhoto.id,
       title,
-      description
+      description,
     );
 
     setUserCollections((prevCollections) => [
@@ -93,7 +94,7 @@ export default function CollectionCreateModal({
       } catch (error) {
         console.error(error);
       }
-    }
+    },
   );
 
   const handleToggelCollection = async (collectionId: string) => {
@@ -104,13 +105,13 @@ export default function CollectionCreateModal({
             ...collection,
             photos: isPhotoInCollection(collection)
               ? collection.photos.filter(
-                  (photo) => photo.id !== selectedPhoto.id
+                  (photo) => photo.id !== selectedPhoto.id,
                 )
               : [...collection.photos, selectedPhoto],
           };
         }
         return collection;
-      })
+      }),
     );
     await updateCollectionOnServer(collectionId);
   };

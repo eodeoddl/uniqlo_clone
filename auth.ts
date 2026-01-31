@@ -8,11 +8,11 @@ import { authConfig } from './auth.config';
 import bcrypt from 'bcrypt';
 import { db } from './lib/db';
 import { getUserByEmail, getUserById } from './data/user';
-import { ZodError } from 'zod';
 
 declare module 'next-auth' {
   interface Session {
     user: {
+      id: string;
       role?: 'ADMIN' | 'USER';
       token?: string;
       refreshToken?: string;
@@ -79,11 +79,24 @@ export const {
         user = await getUserByEmail(email);
         if (!user || !user.password)
           throw new Error(
-            '회원가입이 필요한 이메일 입니다. 회원가입을 진행해 주세요.'
+            '회원가입이 필요한 이메일 입니다. 회원가입을 진행해 주세요.',
           );
-        const passwordMatch = await bcrypt.compare(password, user.password);
 
-        if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
+        if (password) {
+          if (!user.password) {
+            throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
+          }
+
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
+        }
+
+        // if (!user.password) {
+        //   throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
+        // }
+        // const passwordMatch = await bcrypt.compare(password, user.password);
+
+        // if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
 
         return user;
       },
