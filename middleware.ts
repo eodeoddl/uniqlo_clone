@@ -43,35 +43,35 @@
 //   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 // };\
 
-// import NextAuth from 'next-auth';
-// import { NextResponse } from 'next/server';
-// import { authConfig } from './auth.config';
+import NextAuth from 'next-auth';
+import { NextResponse } from 'next/server';
+import { authConfig } from './auth.config';
 
-// const { auth } = NextAuth(authConfig);
+const { auth } = NextAuth(authConfig);
 
-// export default auth((req) => {
-//   const isLoggedIn = !!req.auth;
-//   const { nextUrl } = req;
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const { nextUrl } = req;
 
-//   // 로그인 페이지는 통과
-//   if (nextUrl.pathname.startsWith('/auth')) {
-//     return;
-//   }
+  // 로그인 페이지는 통과
+  if (nextUrl.pathname.startsWith('/auth')) {
+    return;
+  }
 
-//   // (protected) 그룹 보호
-//   if (
-//     nextUrl.pathname.startsWith('/account') ||
-//     nextUrl.pathname.startsWith('/(protected)')
-//   ) {
-//     if (!isLoggedIn) {
-//       return NextResponse.redirect(new URL('/auth/login', nextUrl));
-//     }
-//   }
+  // (protected) 그룹 보호
+  if (
+    nextUrl.pathname.startsWith('/account') ||
+    nextUrl.pathname.startsWith('/(protected)')
+  ) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL('/auth/login', nextUrl));
+    }
+  }
 
-//   return;
-// });
+  return;
+});
 
-export { auth as middleware } from '@/auth';
+// export { auth as middleware } from '@/auth';
 
 export const config = {
   matcher: ['/account/:path*', '/(protected)/:path*'],
