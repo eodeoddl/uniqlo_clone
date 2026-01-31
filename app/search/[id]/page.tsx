@@ -11,10 +11,15 @@ import { DownloadButton } from '@/components/ui/photoGrid';
 import Image from 'next/image';
 import SearchButton from '@/components/search/searchButton';
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
-  const photo = await fetchById(params.id, session?.user.id);
+  if (!session) redirect('/modal/auth/login');
+
+  const photo = await fetchById(params.id, session.user.id);
   const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
 
   return (
