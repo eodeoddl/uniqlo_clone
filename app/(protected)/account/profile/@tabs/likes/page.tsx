@@ -4,6 +4,8 @@ import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { getLikedByUserPhotos } from '@/actions/handleLike';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const session = await auth();
 
