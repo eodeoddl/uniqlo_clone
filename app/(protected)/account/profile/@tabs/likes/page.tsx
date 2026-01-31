@@ -1,21 +1,27 @@
+import PhotoGrid from '@/components/ui/photoGrid';
+import { auth } from '@/auth';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { getLikedByUserPhotos } from '@/actions/handleLike';
-import { auth } from '@/auth';
-import PhotoGrid from '@/components/ui/photoGrid';
+import { redirect } from 'next/navigation';
 
 export default async function Page() {
   const session = await auth();
 
-  if (!session) return null;
+  if (!session) {
+    redirect('/modal/auth/login');
+  }
 
-  const collections = await getAllCollectionsByUser(session.user.id!);
-  const initialData = await getLikedByUserPhotos(session.user.id!);
+  const userId = session.user.id;
+  if (!userId) return null;
+
+  const collections = await getAllCollectionsByUser(userId);
+  const initialData = await getLikedByUserPhotos(userId);
 
   return (
     <PhotoGrid
-      collections={collections}
-      initialData={initialData}
-      query={session.user.id!}
+      collections={collections ?? []}
+      initialData={initialData ?? []}
+      query={userId}
       session={session}
       fetchFunction={getLikedByUserPhotos}
     />
