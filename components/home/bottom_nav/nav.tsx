@@ -1,28 +1,29 @@
 'use client';
-import { cn } from '@/lib/utils';
+
 import { Home, Search, User, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import SearchInput from './searchInput';
-import KeyWordCarousel from './keywordCarousel';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { signOut } from 'next-auth/react';
-import { Session } from 'next-auth';
+import { signOut, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export default function BottomNavigation({
-  session,
-}: {
-  session: Session | null;
-}) {
+import KeyWordCarousel from './keywordCarousel';
+import SearchInput from './searchInput';
+import { cn } from '@/lib/utils';
+
+export default function BottomNavigation() {
   const [searchActive, setSearchActive] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { push } = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchQuery = searchParams.toString();
+  const { data: session, status } = useSession();
+
+  // if (status === 'loading') return null;
 
   const handleUserIconClick = () => {
     if (!session) push('/auth/login');
@@ -30,8 +31,9 @@ export default function BottomNavigation({
   };
 
   useEffect(() => {
+    if (status === 'loading') return;
     setSearchActive(false);
-  }, [pathname, searchParams]);
+  }, [pathname, searchQuery, status]);
 
   return (
     <div
@@ -52,7 +54,7 @@ export default function BottomNavigation({
           {
             'fixed bottom-0 left-1/2 -translate-x-1/2': !searchActive,
             'relative mx-auto': searchActive,
-          }
+          },
         )}
       >
         <div
