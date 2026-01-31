@@ -14,13 +14,20 @@ import { CircleUserRound } from 'lucide-react';
 import CollectionEditModal from '@/components/collections/collectionEditModal';
 import PhotoGrid from '@/components/ui/photoGrid';
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
+  if (!session) redirect('/modal/auth/login');
+
   const { collection: currentCollection, collectionOnPhotosCount } =
     await getCollectionById(params.id);
   const collectionPhotos = await getCollectionPhotos(params.id);
-  const userCollections = await getAllCollectionsByUser(session?.user.id!); // 로그인 하지 않았을 경우를 생각해서 수정필요
+  const userCollections = session
+    ? await getAllCollectionsByUser(session.user.id)
+    : [];
 
   if (!collectionPhotos || !currentCollection)
     return <div>존재하지 않는 컬렉션 입니다.</div>;
