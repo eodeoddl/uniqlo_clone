@@ -18,7 +18,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/*" : ["./components/*"],
+      "@/lib/*" : ["./lib/*"],
+      "@/data/*" : ["./data/*"],
+      "@/schemas/*" : ["./schemas/*"],
+      "@/auth/*" : ["./auth/*"]
     }
   },
   "include": [

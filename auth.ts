@@ -8,6 +8,7 @@ import { authConfig } from './auth.config';
 import bcrypt from 'bcrypt';
 import { db } from './lib/db';
 import { getUserByEmail, getUserById } from './data/user';
+import getServerSession from 'next-auth';
 
 declare module 'next-auth' {
   interface Session {
@@ -22,9 +23,7 @@ declare module 'next-auth' {
 
 class CustomError extends CredentialsSignin {}
 
-export const dynamic = 'force-dynamic';
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
@@ -80,10 +79,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           );
 
         if (password) {
-          // if (!user.password) {
-          //   throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
-          // }
-
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
         }
