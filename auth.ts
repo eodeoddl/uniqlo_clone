@@ -23,7 +23,7 @@ declare module 'next-auth' {
 
 class CustomError extends CredentialsSignin {}
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
