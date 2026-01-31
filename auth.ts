@@ -22,12 +22,7 @@ declare module 'next-auth' {
 
 class CustomError extends CredentialsSignin {}
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
@@ -83,20 +78,13 @@ export const {
           );
 
         if (password) {
-          if (!user.password) {
-            throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
-          }
+          // if (!user.password) {
+          //   throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
+          // }
 
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
         }
-
-        // if (!user.password) {
-        //   throw new Error('이 계정은 비밀번호 로그인을 지원하지 않습니다.');
-        // }
-        // const passwordMatch = await bcrypt.compare(password, user.password);
-
-        // if (!passwordMatch) throw new Error('비밀번호가 일치하지 않습니다.');
 
         return user;
       },
