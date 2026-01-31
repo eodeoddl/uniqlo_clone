@@ -1,18 +1,19 @@
 import {
-  getAllCollectionsByUser,
-  getCollectionById,
-  getCollectionPhotos,
-} from '@/actions/handleCollection';
-import { auth } from '@/auth';
-import CollectionEditModal from '@/components/collections/collectionEditModal';
-import BottomNavigation from '@/components/home/bottom_nav/nav';
-import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import PhotoGrid from '@/components/ui/photoGrid';
+import {
+  getAllCollectionsByUser,
+  getCollectionById,
+  getCollectionPhotos,
+} from '@/actions/handleCollection';
+
+import BottomNavigation from '@/components/home/bottom_nav/nav';
 import { CircleUserRound } from 'lucide-react';
+import CollectionEditModal from '@/components/collections/collectionEditModal';
+import PhotoGrid from '@/components/ui/photoGrid';
+import { auth } from '@/auth';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -60,7 +61,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         session={session}
         initialData={collectionPhotos}
       />
-      <BottomNavigation session={session} />
+      <BottomNavigation />
     </div>
   );
 }

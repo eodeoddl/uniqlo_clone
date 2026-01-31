@@ -1,15 +1,16 @@
 import { ChevronDown, Heart, Plus } from 'lucide-react';
-import { fetchById, getTagsAndTopicsByPhotoId } from '@/data/photo';
-import { auth } from '@/auth';
-import BottomNavigation from '@/components/home/bottom_nav/nav';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { fetchById, getTagsAndTopicsByPhotoId } from '@/data/photo';
+
+import BottomNavigation from '@/components/home/bottom_nav/nav';
 import { DownloadButton } from '@/components/ui/photoGrid';
 import Image from 'next/image';
 import SearchButton from '@/components/search/searchButton';
+import { auth } from '@/auth';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -85,7 +86,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         />
       </div>
       <SearchButton tagsAndTopics={tagsAndTopics} />
-      <BottomNavigation session={session} />
+      <BottomNavigation />
     </div>
   );
 }

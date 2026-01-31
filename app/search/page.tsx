@@ -1,11 +1,11 @@
-import { getAllCollectionsByUser } from '@/actions/handleCollection';
-import { auth } from '@/auth';
 import BottomNavigation from '@/components/home/bottom_nav/nav';
 import FormError from '@/components/ui/form-error';
 import PhotoGrid from '@/components/ui/photoGrid';
-import { fetchBySearch } from '@/data/photo';
-import { keywords } from '@/lib/constance';
+import { auth } from '@/auth';
 import { cn } from '@/lib/utils';
+import { fetchBySearch } from '@/data/photo';
+import { getAllCollectionsByUser } from '@/actions/handleCollection';
+import { keywords } from '@/lib/constance';
 
 export default async function Page({
   searchParams,
@@ -22,7 +22,6 @@ export default async function Page({
     slug,
   };
   const initialData = await fetchBySearch(query);
-  // console.log(initialData);
 
   return (
     <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>
@@ -54,7 +53,7 @@ export default async function Page({
           className='mx-auto w-fit'
         />
       )}
-      <BottomNavigation session={session} />
+      <BottomNavigation />
     </div>
   );
 }
