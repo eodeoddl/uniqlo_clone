@@ -1,3 +1,6 @@
-import { authHandler } from '@/auth';
+// route.ts
 
-export { authHandler as GET, authHandler as POST };
+import { auth } from '@/auth';
+
+export const GET = auth;
+export const POST = auth;
