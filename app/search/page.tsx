@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils';
 import { fetchBySearch } from '@/data/photo';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { keywords } from '@/lib/constance';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Page({
   searchParams,
@@ -13,12 +16,13 @@ export default async function Page({
   searchParams?: { query?: string };
 }) {
   const session = await auth();
+  if (!session) redirect('/modal/auth/login');
   const slug = searchParams?.query?.toString() || '';
   const keyword = keywords.find(({ en }) => slug === en);
-  const collections = await getAllCollectionsByUser(session?.user.id!);
+  const collections = await getAllCollectionsByUser(session.user.id);
 
   const query = {
-    userId: session?.user.id!,
+    userId: session.user.id,
     slug,
   };
   const initialData = await fetchBySearch(query);
