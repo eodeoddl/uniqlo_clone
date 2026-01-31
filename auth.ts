@@ -22,6 +22,8 @@ declare module 'next-auth' {
 
 class CustomError extends CredentialsSignin {}
 
+export const dynamic = 'force-dynamic';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
