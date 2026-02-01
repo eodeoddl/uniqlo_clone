@@ -1,17 +1,19 @@
 'use server';
-import { db } from '@/lib/db';
+
 import { ImageType, PhotoGridFetchFunction } from '@/types';
 
+import { db } from '@/lib/db';
+
 export const fetchBySearch: PhotoGridFetchFunction<{
-  userId: string;
+  userId?: string;
   slug: string;
 }> = async (
   query: {
-    userId: string;
+    userId?: string;
     slug: string;
   },
   skip: number = 0,
-  take: number = 10
+  take: number = 10,
 ) => {
   const { userId, slug } = query;
 
@@ -45,13 +47,11 @@ export const fetchBySearch: PhotoGridFetchFunction<{
       ],
     },
     include: {
-      userLikes: userId
-        ? {
-            where: {
-              userId: userId, // userId가 있을 때만 조건 적용
-            },
-          }
-        : false, // userId가 없으면 userLikes를 포함하지 않음
+      ...(userId && {
+        userLikes: {
+          where: { userId },
+        },
+      }),
     },
     skip,
     take,

@@ -43,11 +43,14 @@
 //   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 // };\
 
-import NextAuth from 'next-auth';
-import { NextResponse } from 'next/server';
-import { authConfig } from './auth.config';
+// import NextAuth from 'next-auth';
+// import { NextResponse } from 'next/server';
+// import authConfig from './auth.config';
 
-const { auth } = NextAuth(authConfig);
+// const { auth } = NextAuth(authConfig);
+
+import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
@@ -71,8 +74,14 @@ export default auth((req) => {
   return;
 });
 
-// export { auth as middleware } from '@/auth';
-
 export const config = {
   matcher: ['/account/:path*', '/(protected)/:path*'],
 };
+
+// export { auth as middleware } from '@/auth';
+
+// export const config = {
+//   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+// };
+
+// export const runtime = 'experimental-edge';

@@ -5,28 +5,23 @@ import { auth } from '@/auth';
 import { cn } from '@/lib/utils';
 import { fetchBySearch } from '@/data/photo';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
+import { handlePhotoLike } from '@/actions/handleLike';
 import { keywords } from '@/lib/constance';
-import { redirect } from 'next/navigation';
-
-export const dynamic = 'force-dynamic';
 
 export default async function Page({
   searchParams,
 }: {
   searchParams?: { query?: string };
 }) {
-  const session = await auth();
-  if (!session) redirect('/modal/auth/login');
   const slug = searchParams?.query?.toString() || '';
   const keyword = keywords.find(({ en }) => slug === en);
-  const collections = await getAllCollectionsByUser(session.user.id);
+  const query = { slug };
 
-  const query = {
-    userId: session.user.id,
-    slug,
-  };
   const initialData = await fetchBySearch(query);
-
+  const session = await auth();
+  const collections = session
+    ? await getAllCollectionsByUser(session.user.id)
+    : [];
   return (
     <div className='w-11/12 max-w-[1200px] mx-auto pt-10'>
       {keyword ? (
@@ -49,7 +44,6 @@ export default async function Page({
           fetchFunction={fetchBySearch}
           initialData={initialData}
           query={query}
-          session={session}
         />
       ) : (
         <FormError

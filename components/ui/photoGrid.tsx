@@ -1,31 +1,31 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
-import { Download, Heart, Plus } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
 import {
-  cn,
+  CollectionWithPhotos,
+  ImageType,
+  PhotoGridFetchFunction,
+} from '@/types';
+import { Download, Heart, Plus } from 'lucide-react';
+import {
   calculateColumns,
+  cn,
   findIndexOfShortestArray,
   splitDataIntoColumns,
 } from '@/lib/utils';
-import { toggleLike } from '@/actions/handleLike';
-import useStateManager from '@/lib/useStateManager';
-import { AlertDialog, AlertDialogContent } from '../ui/alert-dialog';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import CollectionCreateModal from '../collections/collectionCreateModal';
-import {
-  ImageType,
-  CollectionWithPhotos,
-  PhotoGridFetchFunction,
-} from '@/types';
-import { Session } from 'next-auth';
+import Image from 'next/image';
+import Link from 'next/link';
+import { handlePhotoLike } from '@/actions/handleLike';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import useStateManager from '@/lib/useStateManager';
 
 interface PhotoGridProps<T = any> {
   query: T;
   initialData: ImageType[];
-  session: any;
   collections: CollectionWithPhotos[];
   fetchFunction: PhotoGridFetchFunction<T>;
 }
@@ -33,8 +33,6 @@ interface PhotoGridProps<T = any> {
 export default function PhotoGrid({
   query,
   initialData,
-  session,
-  collections,
   fetchFunction,
 }: PhotoGridProps) {
   const { state, handleStateChange, handlePushState, getUpdateQueue } =
@@ -46,6 +44,7 @@ export default function PhotoGrid({
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { data: session } = useSession();
 
   // 무한 스크롤 데이터 페칭
   const fetchMoreData = useCallback(async () => {
@@ -80,7 +79,7 @@ export default function PhotoGrid({
   // 사용자 로그인 체크 헬퍼함수
   const handleAuthCheck = (
     e: React.MouseEvent<HTMLElement>,
-    callback: () => void
+    callback: () => void,
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -88,17 +87,28 @@ export default function PhotoGrid({
     else callback();
   };
 
+  // useEffect(() => {
+  //   if (!session) return;
+  //   const idsToUpdate = getUpdateQueue();
+  //   const updateAndRevalidate = async () => {
+  //     await Promise.all(
+  //       idsToUpdate.map((id) => toggleLike(session.user.id, id)),
+  //     );
+  //   };
+  //   updateAndRevalidate();
+  // }, [getUpdateQueue, session, state]);
+
   // Like 상태 서버측 업데이트
   useEffect(() => {
-    if (!session) return;
-    const idsToUpdate = getUpdateQueue();
-    const updateAndRevalidate = async () => {
-      await Promise.all(
-        idsToUpdate.map((id) => toggleLike(session.user.id!, id))
-      );
-    };
-    updateAndRevalidate();
-  }, [getUpdateQueue, session, state]);
+    const timer = setTimeout(async () => {
+      const ids = getUpdateQueue();
+      if (!ids.length) return;
+
+      await handlePhotoLike(ids);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [state, getUpdateQueue]);
 
   // 초기 columns 상태 설정 및 initialData 변경 시 skipRef 초기화
   useEffect(() => {
@@ -112,14 +122,14 @@ export default function PhotoGrid({
   useEffect(() => {
     const handleResize = () => {
       const numColumns = calculateColumns(window.innerWidth);
-      setColumns(splitDataIntoColumns(columns.flat(), numColumns));
+      setColumns((prev) => splitDataIntoColumns(prev.flat(), numColumns));
     };
 
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [columns]);
+  }, []);
 
   // 무한 스크롤 구현
   useEffect(() => {
@@ -134,7 +144,7 @@ export default function PhotoGrid({
         root: null,
         rootMargin: '500px',
         threshold: 1.0,
-      }
+      },
     );
 
     if (currentLoader) {
@@ -186,7 +196,7 @@ export default function PhotoGrid({
                         handleAuthCheck(e, () =>
                           handleStateChange(item.id, {
                             liked_by_user: !state.get(item.id)?.liked_by_user,
-                          })
+                          }),
                         )
                       }
                     >
@@ -227,12 +237,12 @@ export default function PhotoGrid({
       <div ref={loader}></div>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-0'>
-          <CollectionCreateModal
+          {/* <CollectionCreateModal
             session={session}
             selectedPhoto={selectedPhoto}
             collections={collections}
             onClose={() => setOpen(false)}
-          />
+          /> */}
         </AlertDialogContent>
       </AlertDialog>
     </>

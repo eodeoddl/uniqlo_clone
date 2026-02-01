@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const session = await auth();
 
-  if (!session) redirect('/modal/auth/login');
+  if (!session) redirect('/auth/login');
 
   const userId = session.user.id;
 
@@ -21,7 +21,6 @@ export default async function Page() {
       collections={collections ?? []}
       initialData={initialData ?? []}
       query={userId}
-      session={session}
       fetchFunction={getLikedByUserPhotos}
     />
   );

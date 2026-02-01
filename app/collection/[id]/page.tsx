@@ -20,7 +20,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
-  if (!session) redirect('/modal/auth/login');
+  if (!session) redirect('/auth/login');
 
   const { collection: currentCollection, collectionOnPhotosCount } =
     await getCollectionById(params.id);
@@ -65,7 +65,6 @@ export default async function Page({ params }: { params: { id: string } }) {
         query={params.id}
         collections={userCollections}
         fetchFunction={getCollectionPhotos}
-        session={session}
         initialData={collectionPhotos}
       />
       <BottomNavigation />

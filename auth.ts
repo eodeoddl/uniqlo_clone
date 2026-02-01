@@ -8,7 +8,6 @@ import { authConfig } from './auth.config';
 import bcrypt from 'bcrypt';
 import { db } from './lib/db';
 import { getUserByEmail, getUserById } from './data/user';
-import getServerSession from 'next-auth';
 
 declare module 'next-auth' {
   interface Session {
@@ -96,4 +95,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
-console.log(handlers, auth, signIn, signOut);

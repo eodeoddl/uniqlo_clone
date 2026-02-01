@@ -1,10 +1,4 @@
 import type { NextAuthConfig } from 'next-auth';
-import {
-  DEFAULT_LOGIN_REDIRECT,
-  apiAuthPrefix,
-  authRoutes,
-  publicRoutes,
-} from './routes';
 
 export const authConfig = {
   pages: { signIn: '/auth/login' },

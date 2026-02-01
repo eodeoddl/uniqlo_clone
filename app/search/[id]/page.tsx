@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
-  if (!session) redirect('/modal/auth/login');
+  if (!session) redirect('/auth/login');
 
   const photo = await fetchById(params.id, session.user.id);
   const tagsAndTopics = await getTagsAndTopicsByPhotoId(params.id);
