@@ -1,17 +1,19 @@
 'use server';
-import { ResisterSchema } from './../schemas/index';
+
 import * as z from 'zod';
-import bcrypt from 'bcrypt';
+
+import { AuthError } from 'next-auth';
+import { ResisterSchema } from './../schemas/index';
+import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
+import { generateToken } from '@/lib/token';
 import { getUserByEmail } from '@/data/user';
 import { sendVerificationEmail } from '@/lib/mail';
-import { generateToken } from '@/lib/token';
 import { signIn } from '@/auth';
 import { tokenValidation } from './verification';
-import { AuthError } from 'next-auth';
 
 export const sendResisterToken = async (
-  values: z.infer<typeof ResisterSchema>
+  values: z.infer<typeof ResisterSchema>,
 ) => {
   const validatedFields = ResisterSchema.safeParse(values);
   if (!validatedFields.success) return { error: '잘못된 입력 방식입니다.' };
