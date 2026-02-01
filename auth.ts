@@ -5,7 +5,7 @@ import { LoginSchema } from './schemas';
 import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { authConfig } from './auth.config';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { db } from './lib/db';
 import { getUserByEmail, getUserById } from './data/user';
 
