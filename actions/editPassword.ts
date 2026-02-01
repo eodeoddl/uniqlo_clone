@@ -1,18 +1,20 @@
 'use server';
-import { auth } from '@/auth';
-import { db } from '@/lib/db';
-import { sendPasswordEditEmail } from '@/lib/mail';
+
 import { EditPasswordSchema, ResetPasswordSchema } from '@/schemas';
-import { z } from 'zod';
-import bcrypt from 'bcrypt';
-import { redirect } from 'next/navigation';
+
+import { VerificationError } from '@/lib/errors';
+import { auth } from '@/auth';
+import bcrypt from 'bcryptjs';
+import { db } from '@/lib/db';
 import { generateToken } from '@/lib/token';
 import { getUserByEmail } from '@/data/user';
+import { redirect } from 'next/navigation';
+import { sendPasswordEditEmail } from '@/lib/mail';
 import { tokenValidation } from './verification';
-import { VerificationError } from '@/lib/errors';
+import { z } from 'zod';
 
 export const editPassword = async (
-  values: z.infer<typeof EditPasswordSchema>
+  values: z.infer<typeof EditPasswordSchema>,
 ) => {
   const session = await auth();
   if (!session?.user.email) throw Error('로그인을 해주세요.');
@@ -31,7 +33,7 @@ export const editPassword = async (
 
 export const editPasswordByToken = async (
   values: z.infer<typeof EditPasswordSchema>,
-  token: string
+  token: string,
 ) => {
   try {
     const { email } = await tokenValidation(token);
@@ -56,7 +58,7 @@ export const editPasswordByToken = async (
 };
 
 export const sendVerificationEmail = async (
-  values: z.infer<typeof ResetPasswordSchema>
+  values: z.infer<typeof ResetPasswordSchema>,
 ) => {
   const { token, expires } = generateToken();
 
