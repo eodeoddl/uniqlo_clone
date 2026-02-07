@@ -7,6 +7,9 @@ import { fetchBySearch } from '@/data/photo';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { keywords } from '@/lib/constance';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default async function Page({
   searchParams,
 }: {
