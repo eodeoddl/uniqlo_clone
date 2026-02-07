@@ -1,11 +1,10 @@
 import BottomNavigation from '@/components/home/bottom_nav/nav';
 import FormError from '@/components/ui/form-error';
-import PhotoGrid from '@/components/ui/photoGrid';
+import PhotoGrid from '@/components/photo/photoGrid';
 import { auth } from '@/auth';
 import { cn } from '@/lib/utils';
 import { fetchBySearch } from '@/data/photo';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
-import { handlePhotoLike } from '@/actions/handleLike';
 import { keywords } from '@/lib/constance';
 
 export default async function Page({
@@ -13,12 +12,12 @@ export default async function Page({
 }: {
   searchParams?: { query?: string };
 }) {
+  const session = await auth();
   const slug = searchParams?.query?.toString() || '';
   const keyword = keywords.find(({ en }) => slug === en);
-  const query = { slug };
+  const query = { slug, userId: session?.user.id };
 
   const initialData = await fetchBySearch(query);
-  const session = await auth();
   const collections = session
     ? await getAllCollectionsByUser(session.user.id)
     : [];

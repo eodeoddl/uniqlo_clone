@@ -1,9 +1,17 @@
-import { Session } from 'next-auth';
-import { useRouter } from 'next/navigation';
+'use client';
 
-const useAuthCheck = (callback: () => void, session: Session | null) => {
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+export const useAuthCheck = () => {
+  const { data: session } = useSession();
   const router = useRouter();
-  const authCheck = (e: React.MouseEvent<HTMLElement>) => {
+
+  const authCheck = (
+    e: React.MouseEvent<HTMLElement>,
+    callback: () => void,
+  ) => {
     e.stopPropagation();
     e.preventDefault();
     if (!session) router.push('/auth/login');
@@ -12,5 +20,3 @@ const useAuthCheck = (callback: () => void, session: Session | null) => {
 
   return authCheck;
 };
-
-export default useAuthCheck;

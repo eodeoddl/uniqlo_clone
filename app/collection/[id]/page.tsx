@@ -12,7 +12,7 @@ import {
 import BottomNavigation from '@/components/home/bottom_nav/nav';
 import { CircleUserRound } from 'lucide-react';
 import CollectionEditModal from '@/components/collections/collectionEditModal';
-import PhotoGrid from '@/components/ui/photoGrid';
+import PhotoGrid from '@/components/photo/photoGrid';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 

@@ -7,7 +7,7 @@ import {
 import { fetchById, getTagsAndTopicsByPhotoId } from '@/data/photo';
 
 import BottomNavigation from '@/components/home/bottom_nav/nav';
-import { DownloadButton } from '@/components/ui/photoGrid';
+import { DownloadButton } from '@/components/photo/photoGrid';
 import Image from 'next/image';
 import SearchButton from '@/components/search/searchButton';
 import { auth } from '@/auth';

@@ -15,13 +15,11 @@ import {
 } from '@/lib/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import CollectionCreateModal from '../collections/collectionCreateModal';
 import Image from 'next/image';
+import LikeButton from './likeButton';
 import Link from 'next/link';
-import { handlePhotoLike } from '@/actions/handleLike';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import useStateManager from '@/lib/useStateManager';
+import { useAuthCheck } from '@/lib/useAuthCheck';
+import { useLikesStore } from '@/store/likeStore';
 
 interface PhotoGridProps<T = any> {
   query: T;
@@ -35,16 +33,21 @@ export default function PhotoGrid({
   initialData,
   fetchFunction,
 }: PhotoGridProps) {
-  const { state, handleStateChange, handlePushState, getUpdateQueue } =
-    useStateManager<ImageType>(initialData);
   const [columns, setColumns] = useState<ImageType[][]>([]);
   const [open, setOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<ImageType | null>(null);
   const skipRef = useRef(1);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const { data: session } = useSession();
+  const authCheck = useAuthCheck();
+
+  const likes = useLikesStore((s) => s.state);
+  const pushItems = useLikesStore((s) => s.pushItems);
+  const toggleLike = useLikesStore((s) => s.toggleLike);
+
+  useEffect(() => {
+    pushItems(initialData);
+  }, [initialData, pushItems]);
 
   // 무한 스크롤 데이터 페칭
   const fetchMoreData = useCallback(async () => {
@@ -53,7 +56,7 @@ export default function PhotoGrid({
     if (newData.length === 0) {
       setHasMore(false);
     } else {
-      handlePushState(newData);
+      pushItems(newData);
       setColumns((prevColumns) => {
         const updatedColumns = [...prevColumns];
         let startIndex = findIndexOfShortestArray(updatedColumns);
@@ -74,41 +77,7 @@ export default function PhotoGrid({
       });
       skipRef.current += 1;
     }
-  }, [fetchFunction, handlePushState, query]);
-
-  // 사용자 로그인 체크 헬퍼함수
-  const handleAuthCheck = (
-    e: React.MouseEvent<HTMLElement>,
-    callback: () => void,
-  ) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!session) router.push('/auth/login');
-    else callback();
-  };
-
-  // useEffect(() => {
-  //   if (!session) return;
-  //   const idsToUpdate = getUpdateQueue();
-  //   const updateAndRevalidate = async () => {
-  //     await Promise.all(
-  //       idsToUpdate.map((id) => toggleLike(session.user.id, id)),
-  //     );
-  //   };
-  //   updateAndRevalidate();
-  // }, [getUpdateQueue, session, state]);
-
-  // Like 상태 서버측 업데이트
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      const ids = getUpdateQueue();
-      if (!ids.length) return;
-
-      await handlePhotoLike(ids);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [state, getUpdateQueue]);
+  }, [fetchFunction, pushItems, query]);
 
   // 초기 columns 상태 설정 및 initialData 변경 시 skipRef 초기화
   useEffect(() => {
@@ -189,30 +158,15 @@ export default function PhotoGrid({
                   })}
                 >
                   <div className='absolute top-4 right-4 flex gap-2.5'>
-                    <button
-                      className='pointer-events-auto'
-                      title='이 이미지에 좋아요 표시'
-                      onClick={(e) =>
-                        handleAuthCheck(e, () =>
-                          handleStateChange(item.id, {
-                            liked_by_user: !state.get(item.id)?.liked_by_user,
-                          }),
-                        )
-                      }
-                    >
-                      <Heart
-                        size='32'
-                        fill={
-                          state.get(item.id)?.liked_by_user ? 'red' : 'none'
-                        }
-                        className='image-cover-icon'
-                      />
-                    </button>
+                    <LikeButton
+                      liked={likes.get(item.id)?.liked_by_user ?? false}
+                      onToggle={(e) => authCheck(e, () => toggleLike(item.id))}
+                    />
                     <button
                       className='pointer-events-auto'
                       title='이 이미지를 컬렉션에 추가'
                       onClick={(e) =>
-                        handleAuthCheck(e, () => {
+                        authCheck(e, () => {
                           setSelectedPhoto(item);
                           setOpen(true);
                         })

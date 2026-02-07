@@ -1,4 +1,4 @@
-import PhotoGrid from '@/components/ui/photoGrid';
+import PhotoGrid from '@/components/photo/photoGrid';
 import { auth } from '@/auth';
 import { getAllCollectionsByUser } from '@/actions/handleCollection';
 import { getLikedByUserPhotos } from '@/actions/handleLike';
