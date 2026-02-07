@@ -21,6 +21,7 @@ import LikeButton from './likeButton';
 import SearchButton from '@/components/search/searchButton';
 import { useAuthCheck } from '@/lib/useAuthCheck';
 import { useLikesStore } from '@/store/likeStore';
+import { useRouter } from 'next/navigation';
 
 type Props = { photo: ImageType; tagsAndTopics: string[] };
 
@@ -28,12 +29,13 @@ export default function PhotoModal({ photo, tagsAndTopics }: Props) {
   const authCheck = useAuthCheck();
   const likes = useLikesStore((s) => s.state);
   const toggleLike = useLikesStore((s) => s.toggleLike);
+  const router = useRouter();
 
   return (
     <AlertDialog defaultOpen>
       <AlertDialogContent
         useRouterModal
-        className='w-full sm:w-10/12 lg:w-7/12 max-h-[90vh] p-0 overflow-visible'
+        className='w-fullsm:w-10/12 lg:w-7/12 max-h-[90vh] p-0 overflow-visible'
       >
         {/* 접근성 전용 */}
         <AlertDialogDescription className='sr-only'>
@@ -111,9 +113,12 @@ export default function PhotoModal({ photo, tagsAndTopics }: Props) {
             </div>
 
             {/* 닫기 버튼 */}
-            <AlertDialogCancel className='border-0 w-fit hover:bg-transparent mx-auto'>
+            <button
+              className='border-0 w-fit hover:bg-transparent mx-auto'
+              onClick={() => router.back()}
+            >
               <X size={24} />
-            </AlertDialogCancel>
+            </button>
           </div>
         </div>
       </AlertDialogContent>

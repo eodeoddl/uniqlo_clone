@@ -1,8 +1,8 @@
 'use client';
+
 import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginSchema } from '@/schemas';
+
+import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import {
   Form,
   FormControl,
@@ -11,19 +11,22 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { Input } from '../ui/input';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import BackButton from './back-button';
 import { Button } from '../ui/button';
 import FormError from '../ui/form-error';
-import { login } from '@/actions/login';
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import Header from './header';
-import BackButton from './back-button';
-import Social from './social';
+import { Input } from '../ui/input';
 import Link from 'next/link';
+import { LoginSchema } from '@/schemas';
+import Social from './social';
+import { login } from '@/actions/login';
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-export default function LoginForm({ redirectTo }: { redirectTo: string }) {
+export default function LoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -45,14 +48,14 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
     setError('');
     try {
       await login(values);
-      router.replace(redirectTo);
+      router.back();
       router.refresh();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
         setError(
-          '로그인 중 알 수 없는 문제가 발생했습니다. 다시 시도해 주세요.'
+          '로그인 중 알 수 없는 문제가 발생했습니다. 다시 시도해 주세요.',
         );
       }
     }

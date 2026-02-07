@@ -42,39 +42,6 @@ export const toggleLikeBatch = async (userId: string, photoIds: string[]) => {
   revalidatePath('/account/profile/likes');
 };
 
-// export const toggleLike = async (userId: string, photoId: string) => {
-//   const existingLike = await db.userPhotoLikes.findUnique({
-//     where: {
-//       userId_photoId: {
-//         userId: userId,
-//         photoId: photoId,
-//       },
-//     },
-//   });
-
-//   if (existingLike) {
-//     // 이미 좋아요한 경우 -> 좋아요 취소
-//     await db.userPhotoLikes.delete({
-//       where: {
-//         userId_photoId: {
-//           userId: userId,
-//           photoId: photoId,
-//         },
-//       },
-//     });
-//   } else {
-//     // 좋아요하지 않은 경우 -> 좋아요 추가
-//     await db.userPhotoLikes.create({
-//       data: {
-//         userId: userId,
-//         photoId: photoId,
-//       },
-//     });
-//   }
-
-//   revalidatePath('/account/profile/likes');
-// };
-
 export const handlePhotoLike = async (photoId: string[]) => {
   const session = await auth();
   if (!session) return;

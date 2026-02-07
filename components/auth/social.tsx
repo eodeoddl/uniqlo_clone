@@ -1,16 +1,19 @@
 'use client';
 
-import Image from 'next/image';
-import { signIn } from 'next-auth/react';
-
+import { Button } from '../ui/button';
 import GitHubIcon from '../ui/github.svg';
 import GoogleIcon from '../ui/google.svg';
-import { Button } from '../ui/button';
-import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 
 export default function Social({ isSubmitting }: { isSubmitting: boolean }) {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || window.location.href;
   const onClick = (provider: 'github' | 'google') => {
-    signIn(provider, { callbackUrl: DEFAULT_LOGIN_REDIRECT });
+    signIn(provider, {
+      callbackUrl: callbackUrl.includes('/auth/login') ? '/' : callbackUrl,
+    });
   };
   return (
     <div className='flex flex-col sm:flex-row items-cneter justify-center w-full gap-2'>
