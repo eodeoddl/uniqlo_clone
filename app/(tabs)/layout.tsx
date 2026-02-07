@@ -5,6 +5,8 @@ import TopNavigation from '@/components/home/top_nav/navi';
 import { db } from '@/lib/db';
 import { tabs } from '@/lib/constance';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Layout({
   children,
 }: {

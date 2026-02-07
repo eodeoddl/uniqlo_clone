@@ -1,14 +1,16 @@
 'use client';
-import { Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+
 import { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { Search } from 'lucide-react';
 
 export default function SearchInput() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const [inputValue, setInputValue] = useState(
-    searchParams.get('query')?.toString() || ''
+    searchParams.get('query')?.toString() || '',
   );
 
   const handleSubmit = () => {
@@ -20,7 +22,7 @@ export default function SearchInput() {
   useEffect(() => {
     const query = searchParams.get('query')?.toString() || '';
     setInputValue(query);
-  }, [searchParams.get('query')]);
+  }, [searchParams]);
 
   return (
     <div className='flex items-center w-3/4 md:w-1/2 lg:w-96 h-10 rounded-lg border-2 p-2 mx-auto focus-within:border-blue-500'>
