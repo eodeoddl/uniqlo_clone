@@ -8,14 +8,14 @@ export default function SearchButton({
   tagsAndTopics: string[];
 }) {
   return (
-    <div className='grid grid-rows-auto gap-1.5'>
-      <span className='text-2xl'># 연관 검색어</span>
-      <div>
+    <div className='w-full'>
+      <span className='text-2xl block mb-2'># 연관 검색어</span>
+      <div className='flex flex-wrap gap-2 max-w-full'>
         {tagsAndTopics.map((name) => (
           <Link
             href={`/search?query=${name}`}
-            className='mx-2 my-1 text-lg p-1 rounded bg-gray-100 text-gray-800 hover:underline transition duration-150'
             key={name}
+            className='text-lg p-1 rounded bg-gray-100 text-gray-800 hover:underline transition duration-150 whitespace-nowrap'
           >
             {name}
           </Link>
