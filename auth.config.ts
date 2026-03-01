@@ -20,14 +20,6 @@ export const authConfig = {
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider !== 'credentials') return true;
-      const existingUser = await getUserById(user.id);
-
-      if (!existingUser?.emailVerified) return false;
-
-      return true;
-    },
     async session({ session, token }) {
       return {
         ...session,
@@ -41,27 +33,21 @@ export const authConfig = {
       };
     },
     async jwt({ token }) {
-      if (token.sub) {
-        const user = await getUserById(token.sub);
-        if (user) {
-          console.log('token callback => ', user);
-          token.role = user.role;
-          return token;
-        }
-      }
       return token;
     },
   },
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        let user = null;
+        // let user = null;
         const { email, password } = await LoginSchema.parseAsync(credentials);
-        user = await getUserByEmail(email);
+        const user = await getUserByEmail(email);
         if (!user || !user.password)
           throw new Error(
             '회원가입이 필요한 이메일 입니다. 회원가입을 진행해 주세요.',
           );
+
+        // if()
 
         if (password) {
           const passwordMatch = await bcrypt.compare(password, user.password);

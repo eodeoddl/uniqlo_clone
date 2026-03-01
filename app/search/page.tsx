@@ -46,6 +46,7 @@ export default async function Page({
           fetchFunction={fetchBySearch}
           initialData={initialData}
           query={query}
+          session={session}
         />
       ) : (
         <FormError

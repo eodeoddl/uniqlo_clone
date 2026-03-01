@@ -23,6 +23,7 @@ import { LoginSchema } from '@/schemas';
 import Social from './social';
 import { login } from '@/actions/login';
 import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -43,7 +44,7 @@ export default function LoginForm() {
       : '';
 
   const [error, setError] = useState<string | undefined>();
-
+  const { data: session, update } = useSession();
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError('');
     try {

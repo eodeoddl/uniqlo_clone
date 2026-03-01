@@ -15,9 +15,11 @@ import {
 } from '@/lib/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import CollectionCreateModal from '../collections/collectionCreateModal';
 import Image from 'next/image';
 import LikeButton from './likeButton';
 import Link from 'next/link';
+import { Session } from 'next-auth';
 import { useAuthCheck } from '@/lib/useAuthCheck';
 import { useLikesStore } from '@/store/likeStore';
 
@@ -26,12 +28,14 @@ interface PhotoGridProps<T = any> {
   initialData: ImageType[];
   collections: CollectionWithPhotos[];
   fetchFunction: PhotoGridFetchFunction<T>;
+  session: Session | null;
 }
 
 export default function PhotoGrid({
   query,
   initialData,
   fetchFunction,
+  session,
 }: PhotoGridProps) {
   const [columns, setColumns] = useState<ImageType[][]>([]);
   const [open, setOpen] = useState(false);
@@ -39,7 +43,7 @@ export default function PhotoGrid({
   const skipRef = useRef(1);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
-  const authCheck = useAuthCheck();
+  const authCheck = useAuthCheck(session);
 
   const likes = useLikesStore((s) => s.state);
   const pushItems = useLikesStore((s) => s.pushItems);
@@ -192,7 +196,6 @@ export default function PhotoGrid({
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className='grid grid-cols-1 sm:gap-0 sm:grid-cols-[1fr_2fr] overflow-hidden h-screen w-full sm:w-10/12 lg:w-1/2 sm:h-[60vh] lg:h-[70vh] p-0'>
           {/* <CollectionCreateModal
-            session={session}
             selectedPhoto={selectedPhoto}
             collections={collections}
             onClose={() => setOpen(false)}

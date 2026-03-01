@@ -21,6 +21,7 @@ export default async function Page() {
       collections={collections ?? []}
       initialData={initialData ?? []}
       query={userId}
+      session={session}
       fetchFunction={getLikedByUserPhotos}
     />
   );

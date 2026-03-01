@@ -63,6 +63,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       </div>
       <PhotoGrid
         query={params.id}
+        session={session}
         collections={userCollections}
         fetchFunction={getCollectionPhotos}
         initialData={collectionPhotos}

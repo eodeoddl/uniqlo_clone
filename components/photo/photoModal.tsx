@@ -2,7 +2,6 @@
 
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
@@ -19,14 +18,19 @@ import Image from 'next/image';
 import { ImageType } from '@/types';
 import LikeButton from './likeButton';
 import SearchButton from '@/components/search/searchButton';
+import { Session } from 'next-auth';
 import { useAuthCheck } from '@/lib/useAuthCheck';
 import { useLikesStore } from '@/store/likeStore';
 import { useRouter } from 'next/navigation';
 
-type Props = { photo: ImageType; tagsAndTopics: string[] };
+type Props = {
+  photo: ImageType;
+  tagsAndTopics: string[];
+  session: Session | null;
+};
 
-export default function PhotoModal({ photo, tagsAndTopics }: Props) {
-  const authCheck = useAuthCheck();
+export default function PhotoModal({ photo, tagsAndTopics, session }: Props) {
+  const authCheck = useAuthCheck(session);
   const likes = useLikesStore((s) => s.state);
   const toggleLike = useLikesStore((s) => s.toggleLike);
   const router = useRouter();
