@@ -10,6 +10,9 @@ import { headers } from 'next/headers';
 
 export default async function Modal() {
   const referer = headers().get('referer');
+  const redirectTo = referer
+    ? new URL(referer).pathname + new URL(referer).search
+    : '/';
 
   return (
     <AlertDialog defaultOpen>
