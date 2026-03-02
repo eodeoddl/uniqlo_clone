@@ -6,5 +6,5 @@ export default function Page() {
   const redirectTo = referer
     ? new URL(referer).pathname + new URL(referer).search
     : '/';
-  return <LoginForm redirectTo={redirectTo} />;
+  return <LoginForm />;
 }
